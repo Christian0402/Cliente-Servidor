@@ -2,7 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  */
 
-package com.mycompany.sistemabiblioteca;
+package com.mycompany.sistemabiblioteca.cliente;
+import com.mycompany.sistemabiblioteca.cliente.Controlador.UsuarioCTR;
 
 /**
  *
@@ -11,7 +12,8 @@ package com.mycompany.sistemabiblioteca;
 public class SistemaBiblioteca {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
-        //PRUEBAS PARA EL GIT
+        System.out.println("PRUEBA");
+        UsuarioCTR ucrt = new UsuarioCTR();
+        ucrt.inciar();
     }
 }
