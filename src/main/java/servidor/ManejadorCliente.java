@@ -9,5 +9,4 @@ package servidor;
  * @author Usuario
  */
 public class ManejadorCliente {
-    
 }

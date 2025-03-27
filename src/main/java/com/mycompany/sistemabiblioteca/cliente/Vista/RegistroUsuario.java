@@ -13,6 +13,7 @@ public class RegistroUsuario extends javax.swing.JFrame {
    
     public RegistroUsuario() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     

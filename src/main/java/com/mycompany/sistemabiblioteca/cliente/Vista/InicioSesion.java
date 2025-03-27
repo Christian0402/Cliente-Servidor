@@ -12,6 +12,7 @@ public class InicioSesion extends javax.swing.JFrame {
 
     public InicioSesion() {
         initComponents();
+         setLocationRelativeTo(null);
     }
 
     @SuppressWarnings("unchecked")
@@ -29,6 +30,8 @@ public class InicioSesion extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jPanel1.setAutoscrolls(true);
+
         jLabel1.setText("Bienvenido al Sistema Bibliotecario");
 
         jLabel2.setText("Correo:");
@@ -40,6 +43,8 @@ public class InicioSesion extends javax.swing.JFrame {
         });
 
         jLabel3.setText("Contraseña: ");
+
+        inputContrasena.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
         btnRegistrarse.setText("Registrarse");
 
