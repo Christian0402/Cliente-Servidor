@@ -111,7 +111,8 @@ public class UsuarioCTR implements ActionListener {
     //METODOS CRUD
     private static boolean agregar(UsuarioMOD modelo) {
         String query = "INSERT INTO Usuario (nombre,primerApellido,segundoApellido,correo,contrasena,rol) VALUES (?,?,?,?,?,?)";
-        try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+        try (Connection conn = Conexion.getConnection(); 
+                PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, modelo.getNombre());
             pstmt.setString(2, modelo.getPrimerApellido());
             pstmt.setString(3, modelo.getSegundoApellido());
