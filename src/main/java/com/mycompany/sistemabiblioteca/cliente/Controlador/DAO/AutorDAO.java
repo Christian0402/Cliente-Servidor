@@ -18,6 +18,7 @@ import java.util.ArrayList;
  * @author Usuario
  */
 public class AutorDAO {
+
     public boolean insertar(AutorMOD autor) {
         String query = "INSERT INTO Autor (nombre,primerApellido,fechaNacimiento,fechaFallecimiento) VALUES (?,?,?,?)";
         try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -36,9 +37,7 @@ public class AutorDAO {
     public ArrayList<AutorMOD> obtener() {
         ArrayList<AutorMOD> autores = new ArrayList<>();
         String query = "SELECT * FROM Autor";
-        try (Connection conn = Conexion.getConnection(); 
-                Statement stmt = conn.createStatement(); 
-                ResultSet rs = stmt.executeQuery(query)) {
+        try (Connection conn = Conexion.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
 
                 AutorMOD autor = new AutorMOD(
@@ -56,11 +55,11 @@ public class AutorDAO {
         }
         return autores;
     }
+
     public boolean actualizar(AutorMOD autor) {
         //System.out.println(categoria.getCategoriaID() + categoria.getNombre()+ "en el DAO");
         String query = "UPDATE Autor SET nombre = ?,primerApellido = ?, fechaNacimiento = ?, fechaFallecimiento= ? WHERE autorID = ?";
-        try (Connection conn = Conexion.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+        try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, autor.getNombre());
             pstmt.setString(2, autor.getPrimerApellido());
             pstmt.setDate(3, autor.getFechaNacimiento());
@@ -74,10 +73,10 @@ public class AutorDAO {
             return false;
         }
     }
+
     public boolean eliminar(AutorMOD autor) {
         String query = "DELETE FROM Autor WHERE autorID = ?";
-        try (Connection conn = Conexion.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+        try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setInt(1, autor.getAutorID());
             pstmt.executeUpdate();
             return true;
@@ -85,5 +84,46 @@ public class AutorDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public int buscarPorNombre(String nombre) {
+        String query = "SELECT autorID FROM Autor WHERE nombre=?";
+        int autorID = -1;
+
+        try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, nombre);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    autorID = rs.getInt("autorID");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println(autorID + "ES AUTOR ID ENCONTRADO");
+        return autorID;
+    }
+    public String buscarPorID(int id) {
+        String query = "SELECT nombre,primerApellido FROM Autor WHERE autorID=?";
+        String nombreAutor = "";
+        String apellidoAutor="";
+
+        try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    nombreAutor = rs.getString("nombre");
+                    apellidoAutor = rs.getString("primerApellido");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        //System.out.println(autorID + "ES AUTOR ID ENCONTRADO");
+        return (nombreAutor+" "+apellidoAutor);
     }
 }

@@ -11,6 +11,7 @@ import java.util.logging.Logger;
  * @author Usuario
  */
 public class CategoriaMOD {
+
     int categoriaID;
     String nombre;
 
@@ -37,6 +38,10 @@ public class CategoriaMOD {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return this.nombre;
+    }
+
 }
