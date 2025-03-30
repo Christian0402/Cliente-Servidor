@@ -32,7 +32,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="0" pref="16" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="24" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -55,8 +55,8 @@
                   <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                      <Component id="btnUsuarios" max="32767" attributes="0"/>
-                      <Component id="btnLibros" alignment="1" max="32767" attributes="0"/>
+                      <Component id="btnNuevoPrestamo" max="32767" attributes="0"/>
+                      <Component id="btnMisPrestamos" alignment="1" max="32767" attributes="0"/>
                       <Component id="btnCategorias" alignment="1" max="32767" attributes="0"/>
                       <Component id="btnAutores" alignment="0" max="32767" attributes="0"/>
                   </Group>
@@ -77,9 +77,9 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="nombreUsuario" min="-2" max="-2" attributes="0"/>
                   <EmptySpace pref="12" max="32767" attributes="0"/>
-                  <Component id="btnUsuarios" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnNuevoPrestamo" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="btnLibros" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnMisPrestamos" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="btnCategorias" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -92,23 +92,23 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Menu Principal - Funcionario"/>
+            <Property name="text" type="java.lang.String" value="Menu Principal - Estudiante"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="btnUsuarios">
+        <Component class="javax.swing.JButton" name="btnNuevoPrestamo">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Usuarios"/>
+            <Property name="text" type="java.lang.String" value="Solicitar Prestamo"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
           </AuxValues>
         </Component>
-        <Component class="javax.swing.JButton" name="btnLibros">
+        <Component class="javax.swing.JButton" name="btnMisPrestamos">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Libros"/>
+            <Property name="text" type="java.lang.String" value="Mis Prestamos"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLibrosActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnMisPrestamosActionPerformed"/>
           </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>

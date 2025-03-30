@@ -71,11 +71,12 @@ public class UsuarioDAO {
             pstmt.setString(1, usuario.getNombre());
             pstmt.setString(2,usuario.getPrimerApellido() );
             pstmt.setString(3,usuario.getSegundoApellido() );
+            
             pstmt.setString(4,usuario.getRol() );
             pstmt.setString(5,usuario.getCorreo() );
             pstmt.setString(6,usuario.getContrasena());
             pstmt.setInt(7,usuario.getUsuarioID());
-            pstmt.execute();
+            pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();

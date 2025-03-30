@@ -199,7 +199,7 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Gestion de Autores"/>
+            <Property name="text" type="java.lang.String" value="Gestion de Libros"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="btnAgregar">

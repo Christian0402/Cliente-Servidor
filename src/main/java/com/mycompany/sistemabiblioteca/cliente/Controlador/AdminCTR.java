@@ -26,7 +26,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -57,14 +56,11 @@ public class AdminCTR implements ActionListener {
     private LibroMOD modeloLibro;
     private ArrayList<LibroMOD> modelosLibro;
     private final LibroDAO libroDAO;
-    
+
     //USUARIOS
     private UsuarioMOD modeloUsuario;
     private ArrayList<UsuarioMOD> modelosUsuario;
     private final UsuarioDAO usuarioDAO;
-    
-    
-    
 
     public AdminCTR() {
 
@@ -72,7 +68,7 @@ public class AdminCTR implements ActionListener {
         this.vistaCategorias = new CategoriasAdmin();
         this.vistaAutores = new AutoresAdmin();
         this.vistaLibros = new LibrosAdmin();
-        this.vistaUsuarios= new UsuariosAdmin();
+        this.vistaUsuarios = new UsuariosAdmin();
 
         //MODELOS Y DAO's
         this.modeloCategoria = new CategoriaMOD();
@@ -84,11 +80,10 @@ public class AdminCTR implements ActionListener {
         this.modeloLibro = new LibroMOD();
         this.libroDAO = new LibroDAO();
         this.modelosLibro = new ArrayList();
-        this.usuarioDAO= new UsuarioDAO();
+        this.usuarioDAO = new UsuarioDAO();
         this.modeloUsuario = new UsuarioMOD();
-        this.modelosUsuario= new ArrayList();
-        
-        
+        this.modelosUsuario = new ArrayList();
+
         //Botones y demas 
         this.vistaPrincipal.btnCategorias.addActionListener(this);
         this.vistaPrincipal.btnAutores.addActionListener(this);
@@ -160,15 +155,41 @@ public class AdminCTR implements ActionListener {
             }
 
         });
-        
-        
+
         //VISTA ADMIN USUARIOS
-        
+        this.vistaUsuarios.btnAgregar.addActionListener(this);
+        this.vistaUsuarios.btnEditar.addActionListener(this);
+        this.vistaUsuarios.btnEliminar.addActionListener(this);
+        this.vistaUsuarios.btnVolverUsuarios.addActionListener(this);
+        this.vistaUsuarios.inputCorreo.addActionListener(this);
+        this.vistaUsuarios.inputNombre.addActionListener(this);
+        this.vistaUsuarios.input1Apellido.addActionListener(this);
+        this.vistaUsuarios.input2Apellido.addActionListener(this);
+        this.vistaUsuarios.inputContra.addActionListener(this);
+        this.vistaUsuarios.seleccionID.addActionListener(this);
+        this.vistaUsuarios.inputRol.addActionListener(this);
+        this.vistaUsuarios.tbUsuarios.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int fila = vistaUsuarios.tbUsuarios.getSelectedRow();
+                vistaUsuarios.seleccionID.setText(vistaUsuarios.tbUsuarios.getValueAt(fila, 0).toString());
+                vistaUsuarios.inputNombre.setText(vistaUsuarios.tbUsuarios.getValueAt(fila, 1).toString());
+                vistaUsuarios.input1Apellido.setText(vistaUsuarios.tbUsuarios.getValueAt(fila, 2).toString());
+                vistaUsuarios.input2Apellido.setText(vistaUsuarios.tbUsuarios.getValueAt(fila, 3).toString());
+                vistaUsuarios.inputRol.setSelectedItem(vistaUsuarios.tbUsuarios.getValueAt(fila, 4).toString());
+                vistaUsuarios.inputCorreo.setText(vistaUsuarios.tbUsuarios.getValueAt(fila, 5).toString());
+                vistaUsuarios.inputContra.setText(vistaUsuarios.tbUsuarios.getValueAt(fila, 6).toString());
+
+            }
+
+        });
+
     }
 
     public void inciar() {
         vistaPrincipal.setTitle("Inicio Sesion");
         vistaPrincipal.setVisible(true);
+        
 
     }
 
@@ -183,13 +204,13 @@ public class AdminCTR implements ActionListener {
             vistaCategorias.seleccionID.setVisible(false);
             cargarCategorias();
         }
-        if (e.getSource() == vistaCategorias.btnVolverCategorias || e.getSource() == vistaAutores.btnVolverAutores || e.getSource() == vistaLibros.btnVolverLibros) {
+        if (e.getSource() == vistaCategorias.btnVolverCategorias || e.getSource() == vistaAutores.btnVolverAutores || e.getSource() == vistaLibros.btnVolverLibros || e.getSource() == vistaUsuarios.btnVolverUsuarios) {
             vistaCategorias.dispose();
             vistaAutores.dispose();
             vistaLibros.dispose();
+            vistaUsuarios.dispose();
             vistaPrincipal.setVisible(true);
-           
-            
+
         }
         if (e.getSource() == vistaPrincipal.btnAutores) {
 
@@ -202,7 +223,7 @@ public class AdminCTR implements ActionListener {
             vistaPrincipal.dispose();
             //System.out.println("BTN LIBROS");
             vistaLibros.setVisible(true);
-            
+
             vistaLibros.seleccionID.setVisible(false);
             vistaLibros.seleccionAutorID.setVisible(false);
             vistaLibros.seleccionCategoriaID.setVisible(false);
@@ -210,6 +231,14 @@ public class AdminCTR implements ActionListener {
             cargarCategoriasLibros();
             cargarAutoresLibros();
             cargarLibros();
+        }
+        if (e.getSource() == vistaPrincipal.btnUsuarios) {
+            vistaPrincipal.dispose();
+            //System.out.println("BTN LIBROS");
+            vistaUsuarios.setVisible(true);
+            cargarOpcionesRol();
+            cargarUsuarios();
+
         }
 
         //SECCION DE CATEGORIAS
@@ -271,7 +300,6 @@ public class AdminCTR implements ActionListener {
                 modeloAutor.setNombre(vistaAutores.inputNombreAutor.getText());
                 modeloAutor.setPrimerApellido(vistaAutores.inputApellidoAutor.getText());
 
-                
                 String fechaNacimientoString = vistaAutores.inpuFechaNacimientoAutor.getText();
                 String fechaFallecimientoString = vistaAutores.inputFechaMuerteAutor.getText();
                 SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
@@ -279,9 +307,7 @@ public class AdminCTR implements ActionListener {
                 java.util.Date utilDateMuerte = formato.parse(fechaFallecimientoString);
                 java.sql.Date fechaNaciemiento = new java.sql.Date(utilDateNacimiento.getTime());
                 java.sql.Date fechaMuerte = new java.sql.Date(utilDateMuerte.getTime());
-                
-                
-                
+
                 modeloAutor.setFechaNacimiento(fechaNaciemiento);
                 modeloAutor.setFechaFallecimiento(fechaMuerte);
                 if (autorDAO.insertar(modeloAutor)) {
@@ -339,14 +365,13 @@ public class AdminCTR implements ActionListener {
                 modeloAutor.setPrimerApellido(vistaAutores.inputApellidoAutor.getText());
 
                 String fechaTexto = vistaAutores.inpuFechaNacimientoAutor.getText();
-                
-                
+
                 SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
                 java.util.Date utilDate = formato.parse(fechaTexto);
                 java.sql.Date fechaNaciemiento = new java.sql.Date(utilDate.getTime());
 
                 modeloAutor.setFechaNacimiento(fechaNaciemiento);
-                
+
                 modeloAutor.setAutorID(Integer.parseInt(vistaAutores.seleccionID.getText()));
 
                 if (autorDAO.eliminar(modeloAutor)) {
@@ -368,29 +393,28 @@ public class AdminCTR implements ActionListener {
             try {
 
                 modeloLibro.setTitulo(vistaLibros.inputNombre.getText());
-                
+
                 String categoriaNombre = (String) vistaLibros.inputCategoria.getSelectedItem();
                 int categoriaID = categoriaDAO.buscarPorNombre(categoriaNombre);
                 modeloLibro.setCategoriaID(categoriaID);
-                
+
                 String autorNombre = (String) vistaLibros.inputAutor.getSelectedItem();
                 int autorID = autorDAO.buscarPorNombre(autorNombre);
                 modeloLibro.setAutorID(autorID);
-                
-                if (vistaLibros.inputDisponibilidad.getSelectedItem().equals("Disponible")){
+
+                if (vistaLibros.inputDisponibilidad.getSelectedItem().equals("Disponible")) {
                     modeloLibro.setDisponibilidad(true);
-                }else{
+                } else {
                     modeloLibro.setDisponibilidad(false);
                 }
-                
-             
-               String fechaPublicacion = vistaLibros.inputPublicacion.getText();
-                
+
+                String fechaPublicacion = vistaLibros.inputPublicacion.getText();
+
                 SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
                 java.util.Date utilFechaPublicion = formato.parse(fechaPublicacion);
-                
+
                 java.sql.Date fechaPublicacionSQL = new java.sql.Date(utilFechaPublicion.getTime());
-             
+
                 modeloLibro.setAnoPublicacion(fechaPublicacionSQL);
 
                 if (libroDAO.insertar(modeloLibro)) {
@@ -398,66 +422,62 @@ public class AdminCTR implements ActionListener {
                     cargarLibros();
                 } else {
                     JOptionPane.showMessageDialog(vistaLibros, "Error al agregar el libro", "Error", JOptionPane.ERROR_MESSAGE);
-                     cargarLibros();
+                    cargarLibros();
                 }
 
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(vistaLibros, "Error", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (ParseException ex) {
                 System.out.println("Error al hacer el cambio de fecha");
-            } 
+            }
         }
         if (e.getSource() == vistaLibros.btnEditar) {
             try {
 
                 modeloLibro.setTitulo(vistaLibros.inputNombre.getText());
-                
-                
+
                 String categoriaNombre = (String) vistaLibros.inputCategoria.getSelectedItem();
-                
+
                 int categoriaID = categoriaDAO.buscarPorNombre(categoriaNombre);
-                
-                System.out.println("SE BUSCA EL NOMNRE"+categoriaNombre + "Se obteine por ID: " + categoriaID);
-                
+
+                System.out.println("SE BUSCA EL NOMNRE" + categoriaNombre + "Se obteine por ID: " + categoriaID);
+
                 modeloLibro.setCategoriaID(categoriaID);
-                
-                
+
                 String autorNombre = (String) vistaLibros.inputAutor.getSelectedItem();
                 int autorID = autorDAO.buscarPorNombre(autorNombre);
                 modeloLibro.setAutorID(autorID);
-                
-                if (vistaLibros.inputDisponibilidad.getSelectedItem().equals("Disponible")){
+
+                if (vistaLibros.inputDisponibilidad.getSelectedItem().equals("Disponible")) {
                     modeloLibro.setDisponibilidad(true);
-                }else{
+                } else {
                     modeloLibro.setDisponibilidad(false);
                 }
-                
-             
-               String fechaPublicacion = vistaLibros.inputPublicacion.getText();
-                
+
+                String fechaPublicacion = vistaLibros.inputPublicacion.getText();
+
                 SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
                 java.util.Date utilFechaPublicion = formato.parse(fechaPublicacion);
-                
+
                 java.sql.Date fechaPublicacionSQL = new java.sql.Date(utilFechaPublicion.getTime());
-             
+
                 modeloLibro.setAnoPublicacion(fechaPublicacionSQL);
-                
+
                 modeloLibro.setLibroID(Integer.parseInt(vistaLibros.seleccionID.getText()));
-                
 
                 if (libroDAO.actualizar(modeloLibro)) {
                     JOptionPane.showMessageDialog(vistaLibros, "Se agrego edito con exito", "Success", JOptionPane.INFORMATION_MESSAGE);
                     cargarLibros();
                 } else {
                     JOptionPane.showMessageDialog(vistaLibros, "Error al editar", "Error", JOptionPane.ERROR_MESSAGE);
-                     cargarLibros();
+                    cargarLibros();
                 }
 
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(vistaLibros, "Error", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (ParseException ex) {
                 System.out.println("Error al hacer el cambio de fecha");
-            } 
+            }
         }
         if (e.getSource() == vistaLibros.btnEliminar) {
             try {
@@ -483,23 +503,80 @@ public class AdminCTR implements ActionListener {
 //                java.sql.Date fechaPublicacionSQL = new java.sql.Date(utilFechaPublicion.getTime());
 //             
 //                modeloLibro.setAnoPublicacion(fechaPublicacionSQL);
-                
-                
                 System.out.println(vistaLibros.seleccionID.getText() + "ES EL ID DEL LIBRO QUE SE ASIGNA EN LA TABLA");
 
                 if (libroDAO.eliminar(Integer.parseInt(vistaLibros.seleccionID.getText()))) {
                     JOptionPane.showMessageDialog(vistaLibros, "Se  elimino con exito", "Success", JOptionPane.INFORMATION_MESSAGE);
-                     cargarLibros();
+                    cargarLibros();
                 } else {
                     JOptionPane.showMessageDialog(vistaLibros, "Error al editar", "Error", JOptionPane.ERROR_MESSAGE);
-                     cargarLibros();
+                    cargarLibros();
                 }
 
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(vistaLibros, "Error", "Error", JOptionPane.ERROR_MESSAGE);
-            } 
+            }
         }
 
+        //VISTA USUARIOS
+        if (e.getSource() == vistaUsuarios.btnAgregar) {
+            try {
+
+                modeloUsuario.setNombre(vistaUsuarios.inputNombre.getText());
+                modeloUsuario.setPrimerApellido(vistaUsuarios.input1Apellido.getText());
+                modeloUsuario.setSegundoApellido(vistaUsuarios.input2Apellido.getText());
+                modeloUsuario.setRol(vistaUsuarios.inputRol.getSelectedItem().toString());
+                modeloUsuario.setCorreo(vistaUsuarios.inputCorreo.getText());
+                modeloUsuario.setContrasena(vistaUsuarios.inputContra.getText());
+                if (usuarioDAO.insertar(modeloUsuario)) {
+                    JOptionPane.showMessageDialog(vistaUsuarios, "Se agrego al usuario con exito", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    cargarUsuarios();
+                } else {
+                    JOptionPane.showMessageDialog(vistaUsuarios, "Error al agregar al usuario", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(vistaUsuarios, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        if (e.getSource() == vistaUsuarios.btnEditar) {
+            try {
+                modeloUsuario.setNombre(vistaUsuarios.inputNombre.getText());
+                modeloUsuario.setPrimerApellido(vistaUsuarios.input1Apellido.getText());
+                modeloUsuario.setSegundoApellido(vistaUsuarios.input2Apellido.getText());
+                modeloUsuario.setRol(vistaUsuarios.inputRol.getSelectedItem().toString());
+                modeloUsuario.setCorreo(vistaUsuarios.inputCorreo.getText());
+                modeloUsuario.setContrasena(vistaUsuarios.inputContra.getText());
+                modeloUsuario.setUsuarioID(Integer.parseInt(vistaUsuarios.seleccionID.getText()));
+                System.out.println(modeloUsuario);
+                
+                if (usuarioDAO.actualizar(modeloUsuario)) {
+                    JOptionPane.showMessageDialog(vistaUsuarios, "Se  edito con exito", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    cargarUsuarios();
+                } else {
+                    JOptionPane.showMessageDialog(vistaUsuarios, "Error al editar", "Error", JOptionPane.ERROR_MESSAGE);
+                    cargarUsuarios();
+                }
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(vistaUsuarios, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        if (e.getSource() == vistaUsuarios.btnEliminar) {
+            try {
+
+                if (usuarioDAO.eliminar(Integer.parseInt(vistaUsuarios.seleccionID.getText()))) {
+                    JOptionPane.showMessageDialog(vistaUsuarios, "Se  elimino con exito", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    cargarUsuarios();
+                } else {
+                    JOptionPane.showMessageDialog(vistaUsuarios, "Error al editar", "Error", JOptionPane.ERROR_MESSAGE);
+                    cargarUsuarios();
+                }
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(vistaUsuarios, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     public void cargarCategorias() {
@@ -521,6 +598,7 @@ public class AdminCTR implements ActionListener {
 
         vistaCategorias.tbCategorias.setModel(modelTable);
     }
+
     public void cargarLibros() {
         modelosLibro = libroDAO.obtener();
         DefaultTableModel modelTable = new DefaultTableModel();
@@ -541,9 +619,6 @@ public class AdminCTR implements ActionListener {
                     libro.isDisponibilidad() ? "Disponible" : "No Disponible",
                     libro.getAnoPublicacion().toString()
 
-                    
-                    
-                    
                 });
             }
         } else {
@@ -552,6 +627,7 @@ public class AdminCTR implements ActionListener {
 
         vistaLibros.tbLibros.setModel(modelTable);
     }
+
     public void cargarAutores() {
         modelosAutor = autorDAO.obtener();
         DefaultTableModel modelTable = new DefaultTableModel();
@@ -578,6 +654,7 @@ public class AdminCTR implements ActionListener {
 
         vistaAutores.tbAutores.setModel(modelTable);
     }
+
     public void cargarCategoriasLibros() {
         modelosCategoria = categoriaDAO.obtener();
         vistaLibros.inputCategoria.removeAllItems();
@@ -586,6 +663,7 @@ public class AdminCTR implements ActionListener {
             vistaLibros.inputCategoria.addItem(categoria.getNombre());
         }
     }
+
     public void cargarAutoresLibros() {
         modelosAutor = autorDAO.obtener();
         vistaLibros.inputAutor.removeAllItems();
@@ -595,12 +673,52 @@ public class AdminCTR implements ActionListener {
             System.out.println(autor.getNombre());
         }
     }
-    public void cargarOpcionesDisponibilidad(){
+
+    public void cargarOpcionesDisponibilidad() {
         vistaLibros.inputDisponibilidad.removeAllItems();
         vistaLibros.inputDisponibilidad.addItem("Disponible");
         vistaLibros.inputDisponibilidad.addItem("No Disponible");
     }
-            
-    
 
+    public void cargarOpcionesRol() {
+        vistaUsuarios.inputRol.removeAllItems();
+        vistaUsuarios.inputRol.addItem("Funcionario");
+        vistaUsuarios.inputRol.addItem("Estudiante");
+    }
+
+    public void cargarUsuarios() {
+        modelosUsuario = usuarioDAO.obtener();
+        DefaultTableModel modelTable = new DefaultTableModel();
+        modelTable.addColumn("Codigo");
+        modelTable.addColumn("Nombre");
+        modelTable.addColumn("Primer Apellido");
+        modelTable.addColumn("Segundo Apellido");
+        modelTable.addColumn("Rol");
+        modelTable.addColumn("Correo");
+        modelTable.addColumn("Contrasena");
+        
+
+        if (!modelosUsuario.isEmpty()) {
+            for (UsuarioMOD usuario : modelosUsuario) {
+                modelTable.addRow(new String[]{
+                    String.valueOf(usuario.getUsuarioID()),
+                    usuario.getNombre(),
+                    usuario.getPrimerApellido(),
+                    usuario.getSegundoApellido(),
+                    usuario.getRol(),
+                    usuario.getCorreo(),
+                    usuario.getContrasena()
+                    
+                    
+
+                });
+            }
+        } else {
+            JOptionPane.showMessageDialog(vistaLibros, "No hay usuarios", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        vistaUsuarios.tbUsuarios.setModel(modelTable);
+    }
+    
+   
 }

@@ -18,7 +18,8 @@ import java.util.ArrayList;
  * @author Usuario
  */
 public class LibroDAO {
-     public boolean insertar(LibroMOD libro) {
+
+    public boolean insertar(LibroMOD libro) {
         String query = "INSERT INTO Libro (titulo,autorID,categoriaID,disponibilidad,anoPublicacion) VALUES (?,?,?,?,?)";
         try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, libro.getTitulo());
@@ -26,7 +27,7 @@ public class LibroDAO {
             pstmt.setInt(3, libro.getCategoriaID());
             pstmt.setBoolean(4, libro.isDisponibilidad());
             pstmt.setDate(5, libro.getAnoPublicacion());
-            
+
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -38,9 +39,7 @@ public class LibroDAO {
     public ArrayList<LibroMOD> obtener() {
         ArrayList<LibroMOD> libros = new ArrayList<>();
         String query = "SELECT * FROM Libro";
-        try (Connection conn = Conexion.getConnection(); 
-                Statement stmt = conn.createStatement(); 
-                ResultSet rs = stmt.executeQuery(query)) {
+        try (Connection conn = Conexion.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
 
                 LibroMOD libro = new LibroMOD(
@@ -50,7 +49,6 @@ public class LibroDAO {
                         rs.getInt("categoriaID"),
                         rs.getBoolean("disponibilidad"),
                         rs.getDate("anoPublicacion")
-                        
                 );
 
                 libros.add(libro);
@@ -60,11 +58,11 @@ public class LibroDAO {
         }
         return libros;
     }
+
     public boolean actualizar(LibroMOD libro) {
         System.out.println("El nuevo id de categoria es " + libro.getCategoriaID());
         String query = "UPDATE Libro SET titulo = ?,autorID=?,categoriaID=?,disponibilidad=?,anoPublicacion=? WHERE libroID = ?";
-        try (Connection conn = Conexion.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
+        try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, libro.getTitulo());
             pstmt.setInt(2, libro.getAutorID());
             pstmt.setInt(3, libro.getCategoriaID());
@@ -78,12 +76,12 @@ public class LibroDAO {
             return false;
         }
     }
+
     public boolean eliminar(int id) {
         String query = "DELETE FROM Libro WHERE libroID = ?";
-        try (Connection conn = Conexion.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            System.out.println(id  +  "EL ID QUE RECIBE EL DAO");
-            
+        try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+            System.out.println(id + "EL ID QUE RECIBE EL DAO");
+
             pstmt.setInt(1, id);
             pstmt.execute();
             return true;
@@ -92,4 +90,50 @@ public class LibroDAO {
             return false;
         }
     }
+
+    public boolean cambiarDisponibilidad(int id) {
+        String query = "UPDATE Libro SET disponibilidad=false  WHERE libroID = ?";
+        try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, id);
+
+            pstmt.execute();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public String obtenerNombrePorID(int id) {
+        String query = "Select titulo from  Libro  WHERE libroID = ?";
+        String nombreLibro = "";
+        try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    nombreLibro = rs.getString("titulo");
+
+                }
+            }
+
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return nombreLibro;
+    }
+    public boolean setDisponible(int id){
+         String query = "UPDATE Libro SET disponibilidad=true  WHERE libroID = ?";
+          try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, id);
+
+            pstmt.execute();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

@@ -8,10 +8,10 @@ package com.mycompany.sistemabiblioteca.cliente.Vista;
  *
  * @author Usuario
  */
-public class PrincipalAdmin extends javax.swing.JFrame {
+public class PrincipalEstudiante extends javax.swing.JFrame {
 
    
-    public PrincipalAdmin() {
+    public PrincipalEstudiante() {
         initComponents();
          setLocationRelativeTo(null);
     }
@@ -24,8 +24,8 @@ public class PrincipalAdmin extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        btnUsuarios = new javax.swing.JButton();
-        btnLibros = new javax.swing.JButton();
+        btnNuevoPrestamo = new javax.swing.JButton();
+        btnMisPrestamos = new javax.swing.JButton();
         btnCategorias = new javax.swing.JButton();
         btnAutores = new javax.swing.JButton();
         nombreUsuario = new javax.swing.JLabel();
@@ -34,14 +34,14 @@ public class PrincipalAdmin extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("Menu Principal - Funcionario");
+        jLabel1.setText("Menu Principal - Estudiante");
 
-        btnUsuarios.setText("Usuarios");
+        btnNuevoPrestamo.setText("Solicitar Prestamo");
 
-        btnLibros.setText("Libros");
-        btnLibros.addActionListener(new java.awt.event.ActionListener() {
+        btnMisPrestamos.setText("Mis Prestamos");
+        btnMisPrestamos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLibrosActionPerformed(evt);
+                btnMisPrestamosActionPerformed(evt);
             }
         });
 
@@ -64,8 +64,8 @@ public class PrincipalAdmin extends javax.swing.JFrame {
                 .addGap(40, 40, 40)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel1)
-                    .addComponent(btnUsuarios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnLibros, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnNuevoPrestamo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnMisPrestamos, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnCategorias, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnAutores, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -82,9 +82,9 @@ public class PrincipalAdmin extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(nombreUsuario)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
-                .addComponent(btnUsuarios)
+                .addComponent(btnNuevoPrestamo)
                 .addGap(18, 18, 18)
-                .addComponent(btnLibros)
+                .addComponent(btnMisPrestamos)
                 .addGap(18, 18, 18)
                 .addComponent(btnCategorias)
                 .addGap(18, 18, 18)
@@ -98,7 +98,7 @@ public class PrincipalAdmin extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 16, Short.MAX_VALUE))
+                .addGap(0, 24, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -114,17 +114,17 @@ public class PrincipalAdmin extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnCategoriasActionPerformed
 
-    private void btnLibrosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLibrosActionPerformed
+    private void btnMisPrestamosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMisPrestamosActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnLibrosActionPerformed
+    }//GEN-LAST:event_btnMisPrestamosActionPerformed
 
    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton btnAutores;
     public javax.swing.JButton btnCategorias;
-    public javax.swing.JButton btnLibros;
-    public javax.swing.JButton btnUsuarios;
+    public javax.swing.JButton btnMisPrestamos;
+    public javax.swing.JButton btnNuevoPrestamo;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;

@@ -36,11 +36,10 @@ public class UsuarioCTR implements ActionListener {
         this.vistaInicio = new InicioSesion();
         this.vistaRegistro = new RegistroUsuario();
         this.vistaAdmin= new PrincipalAdmin();
-
         this.vistaInicio.btnRegistrarse.addActionListener(this);
         this.vistaInicio.btnInicioSesion.addActionListener(this);
         this.vistaRegistro.btnRegistrar.addActionListener(this);
-
+        
     }
 
     public void inciar() {
@@ -56,7 +55,7 @@ public class UsuarioCTR implements ActionListener {
                 modelo.setPrimerApellido(vistaRegistro.inputPrimerApellido.getText());
                 modelo.setSegundoApellido(vistaRegistro.inputSegundoApellido.getText());
                 modelo.setCorreo(vistaRegistro.inputCorreo.getText());
-                modelo.setRol("Default");
+                modelo.setRol("Estudiante");
                 modelo.setContrasena(vistaRegistro.inputContrasena.getText());
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(vistaRegistro, "Error", "Error", JOptionPane.ERROR_MESSAGE);
@@ -81,18 +80,22 @@ public class UsuarioCTR implements ActionListener {
                 
                 vistaInicio.dispose();
                 modelo = SesionUsuario.getInstancia().getUsuario();
+                
                 System.out.println(modelo.getRol());
-                if (modelo.getRol().equals("Default")) {
+                if (modelo.getRol().equals("Funcionario")) {
                    
                     AdminCTR adcrt = new AdminCTR();
+                    
                     adcrt.inciar();
+                    
         
-                } else {
-                    System.out.println("FALLO AL ENCONTRAR ROL");
-                }
+                } else if ((modelo.getRol().equals("Estudiante"))) {
+                    EstudianteCTR escrt = new EstudianteCTR();
+                    escrt.iniciar();
+                }else{JOptionPane.showMessageDialog(vistaRegistro, "No hubo coincidencia con ese usuario y contraseña", "Error", JOptionPane.ERROR_MESSAGE);}
 
             } else {
-                JOptionPane.showMessageDialog(vistaRegistro, "Error al inciar sesion", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(vistaRegistro, "Error", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
 
