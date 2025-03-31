@@ -7,20 +7,24 @@ package com.mycompany.sistemabiblioteca.cliente.Controlador;
 import com.mycompany.sistemabiblioteca.cliente.Controlador.DAO.AutorDAO;
 import com.mycompany.sistemabiblioteca.cliente.Controlador.DAO.CategoriaDAO;
 import com.mycompany.sistemabiblioteca.cliente.Controlador.DAO.LibroDAO;
+import com.mycompany.sistemabiblioteca.cliente.Controlador.DAO.PrestamoDAO;
 import com.mycompany.sistemabiblioteca.cliente.Controlador.DAO.UsuarioDAO;
 import com.mycompany.sistemabiblioteca.cliente.Modelo.AutorMOD;
 import com.mycompany.sistemabiblioteca.cliente.Modelo.CategoriaMOD;
 import com.mycompany.sistemabiblioteca.cliente.Modelo.LibroMOD;
+import com.mycompany.sistemabiblioteca.cliente.Modelo.PrestamoMOD;
 import com.mycompany.sistemabiblioteca.cliente.Modelo.UsuarioMOD;
 import com.mycompany.sistemabiblioteca.cliente.Vista.AutoresAdmin;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import com.mycompany.sistemabiblioteca.cliente.Vista.CategoriasAdmin;
 import com.mycompany.sistemabiblioteca.cliente.Vista.LibrosAdmin;
+import com.mycompany.sistemabiblioteca.cliente.Vista.PrestamosAdmin;
 import com.mycompany.sistemabiblioteca.cliente.Vista.PrincipalAdmin;
 import com.mycompany.sistemabiblioteca.cliente.Vista.UsuariosAdmin;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Date;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,7 +45,7 @@ public class AdminCTR implements ActionListener {
     private final AutoresAdmin vistaAutores;
     private final LibrosAdmin vistaLibros;
     private final UsuariosAdmin vistaUsuarios;
-
+    private final PrestamosAdmin vistaPrestamos;
     //CATEGORIA
     private CategoriaMOD modeloCategoria;
     private ArrayList<CategoriaMOD> modelosCategoria;
@@ -62,6 +66,12 @@ public class AdminCTR implements ActionListener {
     private ArrayList<UsuarioMOD> modelosUsuario;
     private final UsuarioDAO usuarioDAO;
 
+    //PRESTAMOS
+    private PrestamoMOD modeloPrestamo;
+    private ArrayList<PrestamoMOD> modelosPrestamo;
+    private final PrestamoDAO prestamoDAO;
+
+    
     public AdminCTR() {
 
         this.vistaPrincipal = new PrincipalAdmin();
@@ -69,6 +79,7 @@ public class AdminCTR implements ActionListener {
         this.vistaAutores = new AutoresAdmin();
         this.vistaLibros = new LibrosAdmin();
         this.vistaUsuarios = new UsuariosAdmin();
+        this.vistaPrestamos= new PrestamosAdmin(); 
 
         //MODELOS Y DAO's
         this.modeloCategoria = new CategoriaMOD();
@@ -83,12 +94,17 @@ public class AdminCTR implements ActionListener {
         this.usuarioDAO = new UsuarioDAO();
         this.modeloUsuario = new UsuarioMOD();
         this.modelosUsuario = new ArrayList();
-
+        this.modelosPrestamo =new ArrayList();
+        this.modeloPrestamo = new PrestamoMOD();
+        this.prestamoDAO = new PrestamoDAO();
+        
+        
         //Botones y demas 
         this.vistaPrincipal.btnCategorias.addActionListener(this);
         this.vistaPrincipal.btnAutores.addActionListener(this);
         this.vistaPrincipal.btnLibros.addActionListener(this);
         this.vistaPrincipal.btnUsuarios.addActionListener(this);
+        this.vistaPrincipal.btnPrestamos.addActionListener(this);
 
         //VISTA ADMIN CATEGORIAS
         this.vistaCategorias.btnVolverCategorias.addActionListener(this);
@@ -183,7 +199,32 @@ public class AdminCTR implements ActionListener {
             }
 
         });
+        
+        //VISTA ADMIN PRESTAMOS
+        this.vistaPrestamos.btnFinalizar.addActionListener(this);
+        this.vistaPrestamos.inputNombreEstudiante.addActionListener(this);
+        this.vistaPrestamos.btnVolver.addActionListener(this);
+        this.vistaPrestamos.inputNombreLibro.addActionListener(this);
+        this.vistaPrestamos.inputInicio.addActionListener(this);
+        this.vistaPrestamos.inputFin.addActionListener(this);
+        this.vistaPrestamos.inputEstado.addActionListener(this);
+        this.vistaPrestamos.inputMulta.addActionListener(this);
+        this.vistaPrestamos.inputDevolucion.addActionListener(this);
+        this.vistaPrestamos.tbPrestamos.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int fila = vistaPrestamos.tbPrestamos.getSelectedRow();
+                vistaPrestamos.seleccionID.setText(vistaPrestamos.tbPrestamos.getValueAt(fila, 0).toString());
+                vistaPrestamos.inputNombreEstudiante.setText(vistaPrestamos.tbPrestamos.getValueAt(fila, 1).toString());
+                vistaPrestamos.inputNombreLibro.setText(vistaPrestamos.tbPrestamos.getValueAt(fila, 2).toString());
+                vistaPrestamos.inputInicio.setText(vistaPrestamos.tbPrestamos.getValueAt(fila, 3).toString());
+                vistaPrestamos.inputFin.setText(vistaPrestamos.tbPrestamos.getValueAt(fila, 4).toString());
+                vistaPrestamos.inputEstado.setText(vistaPrestamos.tbPrestamos.getValueAt(fila, 5).toString());
+                vistaPrestamos.inputMulta.setText(vistaPrestamos.tbPrestamos.getValueAt(fila, 6).toString());
+                vistaPrestamos.inputDevolucion.setText(vistaPrestamos.tbPrestamos.getValueAt(fila, 7).toString());
+            }
 
+        });
     }
 
     public void inciar() {
@@ -202,13 +243,15 @@ public class AdminCTR implements ActionListener {
             vistaPrincipal.dispose();
             vistaCategorias.setVisible(true);
             vistaCategorias.seleccionID.setVisible(false);
+            
             cargarCategorias();
         }
-        if (e.getSource() == vistaCategorias.btnVolverCategorias || e.getSource() == vistaAutores.btnVolverAutores || e.getSource() == vistaLibros.btnVolverLibros || e.getSource() == vistaUsuarios.btnVolverUsuarios) {
+        if (e.getSource() == vistaCategorias.btnVolverCategorias || e.getSource() == vistaAutores.btnVolverAutores || e.getSource() == vistaLibros.btnVolverLibros || e.getSource() == vistaUsuarios.btnVolverUsuarios || e.getSource() == vistaPrestamos.btnVolver) {
             vistaCategorias.dispose();
             vistaAutores.dispose();
             vistaLibros.dispose();
             vistaUsuarios.dispose();
+            vistaPrestamos.dispose();
             vistaPrincipal.setVisible(true);
 
         }
@@ -217,6 +260,7 @@ public class AdminCTR implements ActionListener {
             vistaPrincipal.dispose();
             vistaAutores.setVisible(true);
             vistaAutores.seleccionID.setVisible(false);
+            
             cargarAutores();
         }
         if (e.getSource() == vistaPrincipal.btnLibros) {
@@ -236,9 +280,17 @@ public class AdminCTR implements ActionListener {
             vistaPrincipal.dispose();
             //System.out.println("BTN LIBROS");
             vistaUsuarios.setVisible(true);
+            vistaUsuarios.seleccionID.setVisible(false);
             cargarOpcionesRol();
             cargarUsuarios();
 
+        }
+        if (e.getSource() == vistaPrincipal.btnPrestamos) {
+            vistaPrincipal.dispose();
+            
+            vistaPrestamos.setVisible(true);
+            vistaPrestamos.seleccionID.setVisible(false);
+            cargarPrestamos();
         }
 
         //SECCION DE CATEGORIAS
@@ -482,27 +534,6 @@ public class AdminCTR implements ActionListener {
         if (e.getSource() == vistaLibros.btnEliminar) {
             try {
 
-//                modeloLibro.setTitulo(vistaLibros.inputNombre.getText());
-//                
-//                String categoriaNombre = (String) vistaLibros.inputCategoria.getSelectedItem();
-//                int categoriaID = categoriaDAO.buscarPorNombre(categoriaNombre);
-//                modeloLibro.setCategoriaID(categoriaID);
-//                
-//                String autorNombre = (String) vistaLibros.inputAutor.getSelectedItem();
-//                int autorID = autorDAO.buscarPorNombre(autorNombre);
-//                modeloLibro.setAutorID(autorID);
-//                
-//                modeloLibro.setDisponibilidad(true);
-//                
-//             
-//               String fechaPublicacion = vistaLibros.inputPublicacion.getText();
-//                
-//                SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
-//                java.util.Date utilFechaPublicion = formato.parse(fechaPublicacion);
-//                
-//                java.sql.Date fechaPublicacionSQL = new java.sql.Date(utilFechaPublicion.getTime());
-//             
-//                modeloLibro.setAnoPublicacion(fechaPublicacionSQL);
                 System.out.println(vistaLibros.seleccionID.getText() + "ES EL ID DEL LIBRO QUE SE ASIGNA EN LA TABLA");
 
                 if (libroDAO.eliminar(Integer.parseInt(vistaLibros.seleccionID.getText()))) {
@@ -576,6 +607,22 @@ public class AdminCTR implements ActionListener {
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(vistaUsuarios, "Error", "Error", JOptionPane.ERROR_MESSAGE);
             }
+        }
+        
+        //VISTA PRESTAMOS 
+        if (e.getSource()== vistaPrestamos.btnFinalizar){
+            int idPrestamo=Integer.parseInt(vistaPrestamos.seleccionID.getText());
+            System.out.println("EL ide del prestamp por finalizar es "+idPrestamo);
+            Date fechaActual = new Date(System.currentTimeMillis());
+             if (prestamoDAO.finalizarPrestamo(idPrestamo,fechaActual) ){
+                    JOptionPane.showMessageDialog(vistaPrestamos, "Se finalizo el prestamo con exito", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    libroDAO.setDisponible(prestamoDAO.obtenerIDLibroPorIDPrestamo(idPrestamo));
+                    cargarPrestamos();
+                   
+                } else {
+                    JOptionPane.showMessageDialog(vistaPrestamos, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+                    cargarPrestamos();
+                }
         }
     }
 
@@ -720,5 +767,43 @@ public class AdminCTR implements ActionListener {
         vistaUsuarios.tbUsuarios.setModel(modelTable);
     }
     
-   
+   public void cargarPrestamos(){
+        modelosPrestamo = prestamoDAO.obtener();
+        DefaultTableModel modelTable = new DefaultTableModel();
+        modelTable.addColumn("Codigo");
+        modelTable.addColumn("Nombre Estudiante");
+        modelTable.addColumn("Libro");
+        modelTable.addColumn("Fecha Inicio");
+        modelTable.addColumn("Posible Fecha Fin");
+        modelTable.addColumn("Estado");
+        modelTable.addColumn("Multa");
+        modelTable.addColumn("Fecha Devolucion Real");
+
+        if (!modelosPrestamo.isEmpty()) {
+            for (PrestamoMOD prestamo : modelosPrestamo) {
+                String fechaDevolucion="";
+                System.out.println(prestamo.getPrestamoID());
+                if (prestamo.getFechaDevolucion() ==null){
+                     fechaDevolucion="No definida";
+                }else {
+                    fechaDevolucion=prestamo.getFechaDevolucion().toString();
+                }
+                modelTable.addRow(new String[]{
+                    String.valueOf(prestamo.getPrestamoID()),
+                    usuarioDAO.obtnerNombreCompletoPorID(prestamo.getUsuarioID()),
+                    libroDAO.obtenerNombrePorID(prestamo.getLibroID()),
+                    prestamo.getFechaInicio().toString(),
+                    prestamo.getFechaFinalizacion().toString(),
+                    prestamo.getEstado(),
+                    prestamo.getMulta().toString(),
+                    fechaDevolucion
+
+                });
+            }
+        } else {
+            JOptionPane.showMessageDialog(vistaPrestamos, "No hay prestamos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        vistaPrestamos.tbPrestamos.setModel(modelTable);
+    }
 }

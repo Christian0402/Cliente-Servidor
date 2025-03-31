@@ -97,4 +97,23 @@ public class UsuarioDAO {
             return false;
         }
     }
+    public String obtnerNombreCompletoPorID (int id){
+        String query = "Select nombre,primerApellido from  Usuario  WHERE usuarioID = ?";
+        String nombreCompleto = "";
+        try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    nombreCompleto = rs.getString("nombre")+" "+rs.getString("primerApellido");
+
+                }
+            }
+
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return nombreCompleto;
+    }
 }

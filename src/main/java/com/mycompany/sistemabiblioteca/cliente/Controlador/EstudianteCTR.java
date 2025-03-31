@@ -135,8 +135,9 @@ public class EstudianteCTR implements ActionListener {
 
             vistaPrincipal.dispose();
             vistaNuevoPrestamo.setVisible(true);
-
+            
             vistaNuevoPrestamo.seleccionLibroID.setVisible(false);
+            vistaNuevoPrestamo.seleccionUsuarioID.setVisible(false);
             
             cargarLibros();
         }
@@ -146,6 +147,7 @@ public class EstudianteCTR implements ActionListener {
             vistaPrestamos.setVisible(true);
 
             vistaPrestamos.seleccionID.setVisible(false);
+            
             
             cargarPrestamos();
         }
