@@ -8,6 +8,8 @@ import com.mycompany.sistemabiblioteca.cliente.Modelo.UsuarioMOD;
 import com.mycompany.sistemabiblioteca.cliente.Vista.InicioSesion;
 import com.mycompany.sistemabiblioteca.cliente.Vista.RegistroUsuario;
 import com.mycompany.sistemabiblioteca.cliente.Vista.PrincipalAdmin;
+import  com.mycompany.sistemabiblioteca.cliente.Modelo.Cliente;
+
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,6 +31,7 @@ public class UsuarioCTR implements ActionListener {
     private final InicioSesion vistaInicio;
     private final RegistroUsuario vistaRegistro;
     private final PrincipalAdmin vistaAdmin;
+    private Cliente cliente;
 
     public UsuarioCTR() {
         this.modelos = new ArrayList();
@@ -39,10 +42,13 @@ public class UsuarioCTR implements ActionListener {
         this.vistaInicio.btnRegistrarse.addActionListener(this);
         this.vistaInicio.btnInicioSesion.addActionListener(this);
         this.vistaRegistro.btnRegistrar.addActionListener(this);
-        
+        this.cliente = new Cliente();
     }
 
     public void inciar() {
+        cliente.enviarMensaje("Solicitando datos...");
+        String respuesta = cliente.recibirMensaje();
+        System.out.println("Respuesta del servidor: " + respuesta);
         vistaInicio.setTitle("Inicio Sesion");
         vistaInicio.setVisible(true);
     }
