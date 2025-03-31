@@ -3,17 +3,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.mycompany.sistemabiblioteca.cliente.Vista;
-
+import com.mycompany.sistemabiblioteca.cliente.Modelo.AutorMOD;
 /**
  *
  * @author Usuario
  */
 public class LibrosAdmin extends javax.swing.JFrame {
-
+ 
  
     public LibrosAdmin() {
         initComponents();
         setLocationRelativeTo(null);
+     
     }
 
     @SuppressWarnings("unchecked")
@@ -267,7 +268,7 @@ public class LibrosAdmin extends javax.swing.JFrame {
     public javax.swing.JButton btnEditar;
     public javax.swing.JButton btnEliminar;
     public javax.swing.JButton btnVolverLibros;
-    public javax.swing.JComboBox<String> inputAutor;
+    public javax.swing.JComboBox<Object> inputAutor;
     public javax.swing.JComboBox<String> inputCategoria;
     public javax.swing.JComboBox inputDisponibilidad;
     public javax.swing.JTextField inputNombre;

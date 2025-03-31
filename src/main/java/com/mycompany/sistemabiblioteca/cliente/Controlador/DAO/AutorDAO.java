@@ -86,25 +86,7 @@ public class AutorDAO {
         }
     }
 
-    public int buscarPorNombre(String nombre) {
-        String query = "SELECT autorID FROM Autor WHERE nombre=?";
-        int autorID = -1;
 
-        try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            pstmt.setString(1, nombre);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    autorID = rs.getInt("autorID");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        System.out.println(autorID + "ES AUTOR ID ENCONTRADO");
-        return autorID;
-    }
     public String buscarPorID(int id) {
         String query = "SELECT nombre,primerApellido FROM Autor WHERE autorID=?";
         String nombreAutor = "";

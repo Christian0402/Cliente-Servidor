@@ -450,9 +450,14 @@ public class AdminCTR implements ActionListener {
                 int categoriaID = categoriaDAO.buscarPorNombre(categoriaNombre);
                 modeloLibro.setCategoriaID(categoriaID);
 
-                String autorNombre = (String) vistaLibros.inputAutor.getSelectedItem();
-                int autorID = autorDAO.buscarPorNombre(autorNombre);
-                modeloLibro.setAutorID(autorID);
+                
+                AutorMOD autorSeleccionado = (AutorMOD) vistaLibros.inputAutor.getSelectedItem();
+                modeloLibro.setAutorID(autorSeleccionado.getAutorID());
+                        
+                        
+//                String autorNombre = (String) vistaLibros.inputAutor.getSelectedItem();
+//                int autorID = autorDAO.buscarPorNombre(autorNombre);
+//                modeloLibro.setAutorID(autorID);
 
                 if (vistaLibros.inputDisponibilidad.getSelectedItem().equals("Disponible")) {
                     modeloLibro.setDisponibilidad(true);
@@ -496,9 +501,8 @@ public class AdminCTR implements ActionListener {
 
                 modeloLibro.setCategoriaID(categoriaID);
 
-                String autorNombre = (String) vistaLibros.inputAutor.getSelectedItem();
-                int autorID = autorDAO.buscarPorNombre(autorNombre);
-                modeloLibro.setAutorID(autorID);
+                AutorMOD autorSeleccionado = (AutorMOD) vistaLibros.inputAutor.getSelectedItem();
+                modeloLibro.setAutorID(autorSeleccionado.getAutorID());
 
                 if (vistaLibros.inputDisponibilidad.getSelectedItem().equals("Disponible")) {
                     modeloLibro.setDisponibilidad(true);
@@ -716,7 +720,8 @@ public class AdminCTR implements ActionListener {
         vistaLibros.inputAutor.removeAllItems();
 
         for (AutorMOD autor : modelosAutor) {
-            vistaLibros.inputAutor.addItem(autor.getNombre());
+            vistaLibros.inputAutor.addItem(autor);
+            //vistaLibros.inputAutor.addItem(autor.getNombre());
             System.out.println(autor.getNombre());
         }
     }

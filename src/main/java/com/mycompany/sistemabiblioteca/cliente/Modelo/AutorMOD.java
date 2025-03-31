@@ -25,6 +25,11 @@ public class AutorMOD {
 
     public AutorMOD() {
     }
+
+    @Override
+    public String toString() {
+        return nombre +" "+  primerApellido;
+    }
     
 
     public int getAutorID() {
@@ -66,6 +71,7 @@ public class AutorMOD {
     public void setFechaFallecimiento(Date fechaFallecimiento) {
         this.fechaFallecimiento = fechaFallecimiento;
     }
+    
     
 
 }
