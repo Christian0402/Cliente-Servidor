@@ -747,7 +747,7 @@ public class AdminCTR implements ActionListener {
         modelTable.addColumn("Segundo Apellido");
         modelTable.addColumn("Rol");
         modelTable.addColumn("Correo");
-        modelTable.addColumn("Contrasena");
+        //modelTable.addColumn("Contrasena");
         
 
         if (!modelosUsuario.isEmpty()) {
@@ -759,7 +759,7 @@ public class AdminCTR implements ActionListener {
                     usuario.getSegundoApellido(),
                     usuario.getRol(),
                     usuario.getCorreo(),
-                    usuario.getContrasena()
+                   // usuario.getContrasena()
                     
                     
 
