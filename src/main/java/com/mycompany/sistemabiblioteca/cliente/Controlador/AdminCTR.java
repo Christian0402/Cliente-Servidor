@@ -759,7 +759,7 @@ public class AdminCTR implements ActionListener {
                     usuario.getSegundoApellido(),
                     usuario.getRol(),
                     usuario.getCorreo(),
-                   // usuario.getContrasena()
+                    usuario.getContrasena()
                     
                     
 

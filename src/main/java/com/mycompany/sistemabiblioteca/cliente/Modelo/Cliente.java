@@ -9,7 +9,8 @@ import java.net.Socket;
 
 
 public class Cliente {
-    private static final String HOST = "localhost";
+    //private static final String HOST = "localhost";
+    private static final String HOST = "10.1.5.67";
     private static final int PUERTO = 5000;
     private Socket socket;
     private PrintWriter salida;
