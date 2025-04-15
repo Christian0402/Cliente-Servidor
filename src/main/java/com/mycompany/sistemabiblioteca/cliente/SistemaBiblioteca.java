@@ -3,7 +3,7 @@
  */
 
 package com.mycompany.sistemabiblioteca.cliente;
-import com.mycompany.sistemabiblioteca.cliente.Controlador.UsuarioCTR;
+import com.mycompany.sistemabiblioteca.cliente.ControladorVista.UsuarioCTR;
 
 
 public class SistemaBiblioteca {

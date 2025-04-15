@@ -2,13 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.sistemabiblioteca.cliente.Modelo;
+package shared;
 
 /**
  *
  * @author Usuario
  */
-public class UsuarioMOD {
+public class Usuario {
 int usuarioID ;
 String nombre ;
 String primerApellido;
@@ -17,7 +17,7 @@ String rol ;
 String correo ;
 String contrasena ;
 
-    public UsuarioMOD(int usuarioID, String nombre, String primerApellido, String segundoApellido, String rol, String correo, String contrasena) {
+    public Usuario(int usuarioID, String nombre, String primerApellido, String segundoApellido, String rol, String correo, String contrasena) {
         this.usuarioID = usuarioID;
         this.nombre = nombre;
         this.primerApellido = primerApellido;
@@ -27,8 +27,14 @@ String contrasena ;
         this.contrasena = contrasena;
     }
 
-    public UsuarioMOD() {
+    public Usuario() {
     }
+
+    public Usuario(String correo, String contrasena) {
+        this.correo = correo;
+        this.contrasena = contrasena;
+    }
+    
 
     @Override
     public String toString() {

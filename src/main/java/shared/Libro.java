@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.sistemabiblioteca.cliente.Modelo;
+package shared;
 
 import java.sql.Date;
 
@@ -10,7 +10,7 @@ import java.sql.Date;
  *
  * @author Usuario
  */
-public class LibroMOD {
+public class Libro {
 
     int libroID;
     String titulo;
@@ -19,7 +19,7 @@ public class LibroMOD {
     boolean disponibilidad;
     Date anoPublicacion;
 
-    public LibroMOD(int libroID, String titulo, int autorID, int categoriaID, boolean disponibilidad, Date anoPublicacion) {
+    public Libro(int libroID, String titulo, int autorID, int categoriaID, boolean disponibilidad, Date anoPublicacion) {
         this.libroID = libroID;
         this.titulo = titulo;
         this.autorID = autorID;
@@ -28,7 +28,7 @@ public class LibroMOD {
         this.anoPublicacion = anoPublicacion;
     }
 
-    public LibroMOD() {
+    public Libro() {
     }
 
     public int getLibroID() {

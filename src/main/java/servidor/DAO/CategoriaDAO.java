@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.sistemabiblioteca.cliente.Controlador.DAO;
+package servidor.DAO;
 
-import com.mycompany.sistemabiblioteca.cliente.Controlador.Conexion;
-import com.mycompany.sistemabiblioteca.cliente.Modelo.CategoriaMOD;
+import servidor.Conexion;
+import shared.Categoria;
 import java.sql.Connection;
 import java.sql.Date;
 
@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class CategoriaDAO {
 
-    public boolean insertar(CategoriaMOD categoria) {
+    public boolean agregar(Categoria categoria) {
         String query = "INSERT INTO Categoria (nombre) VALUES (?)";
         try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, categoria.getNombre());
@@ -34,13 +34,13 @@ public class CategoriaDAO {
         }
     }
 
-    public ArrayList<CategoriaMOD> obtener() {
-        ArrayList<CategoriaMOD> categorias = new ArrayList<>();
+    public ArrayList<Categoria> obtener() {
+        ArrayList<Categoria> categorias = new ArrayList<>();
         String query = "SELECT * FROM Categoria";
         try (Connection conn = Conexion.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
 
-                CategoriaMOD categoria = new CategoriaMOD(
+                Categoria categoria = new Categoria(
                         rs.getInt("categoriaID"),
                         rs.getString("nombre")
                 );
@@ -53,7 +53,7 @@ public class CategoriaDAO {
         return categorias;
     }
 
-    public boolean actualizar(CategoriaMOD categoria) {
+    public boolean actualizar(Categoria categoria) {
         System.out.println(categoria.getCategoriaID() + categoria.getNombre() + "en el DAO");
         String query = "UPDATE Categoria SET nombre = ? WHERE categoriaID = ?";
         try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -68,10 +68,10 @@ public class CategoriaDAO {
         }
     }
 
-    public boolean eliminar(CategoriaMOD categoria) {
+    public boolean eliminar(int id) {
         String query = "DELETE FROM Categoria WHERE categoriaID = ?";
         try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, categoria.getCategoriaID());
+            pstmt.setInt(1, id);
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -117,7 +117,7 @@ public class CategoriaDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        //System.out.println(autorID + "ES AUTOR ID ENCONTRADO");
+        
         return (nombreCategoria);
     }
 

@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.sistemabiblioteca.cliente.Controlador.DAO;
+package servidor.DAO;
 
-import com.mycompany.sistemabiblioteca.cliente.Controlador.Conexion;
-import com.mycompany.sistemabiblioteca.cliente.Modelo.AutorMOD;
+import servidor.Conexion;
+import shared.Autor;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
  */
 public class AutorDAO {
 
-    public boolean insertar(AutorMOD autor) {
+    public boolean agregar(Autor autor) {
         String query = "INSERT INTO Autor (nombre,primerApellido,fechaNacimiento,fechaFallecimiento) VALUES (?,?,?,?)";
         try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, autor.getNombre());
@@ -34,13 +34,13 @@ public class AutorDAO {
         }
     }
 
-    public ArrayList<AutorMOD> obtener() {
-        ArrayList<AutorMOD> autores = new ArrayList<>();
+    public ArrayList<Autor> obtener() {
+        ArrayList<Autor> autores = new ArrayList<>();
         String query = "SELECT * FROM Autor";
         try (Connection conn = Conexion.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
 
-                AutorMOD autor = new AutorMOD(
+                Autor autor = new Autor(
                         rs.getInt("autorID"),
                         rs.getString("nombre"),
                         rs.getString("primerApellido"),
@@ -56,7 +56,7 @@ public class AutorDAO {
         return autores;
     }
 
-    public boolean actualizar(AutorMOD autor) {
+    public boolean actualizar(Autor autor) {
         //System.out.println(categoria.getCategoriaID() + categoria.getNombre()+ "en el DAO");
         String query = "UPDATE Autor SET nombre = ?,primerApellido = ?, fechaNacimiento = ?, fechaFallecimiento= ? WHERE autorID = ?";
         try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -74,10 +74,10 @@ public class AutorDAO {
         }
     }
 
-    public boolean eliminar(AutorMOD autor) {
+    public boolean eliminar(int id) {
         String query = "DELETE FROM Autor WHERE autorID = ?";
         try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, autor.getAutorID());
+            pstmt.setInt(1, id);
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {

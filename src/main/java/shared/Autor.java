@@ -2,20 +2,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.sistemabiblioteca.cliente.Modelo;
+package shared;
 
 import java.sql.Date;
 
 
 
-public class AutorMOD {
+public class Autor {
     int autorID;
     String nombre ;
     String primerApellido ;
     Date fechaNacimiento ;
     Date fechaFallecimiento;
 
-    public AutorMOD(int autorID, String nombre, String primerApellido, Date fechaNacimiento, Date fechaFallecimiento) {
+    public Autor(int autorID, String nombre, String primerApellido, Date fechaNacimiento, Date fechaFallecimiento) {
         this.autorID = autorID;
         this.nombre = nombre;
         this.primerApellido = primerApellido;
@@ -23,7 +23,7 @@ public class AutorMOD {
         this.fechaFallecimiento = fechaFallecimiento;
     }
 
-    public AutorMOD() {
+    public Autor() {
     }
 
     @Override

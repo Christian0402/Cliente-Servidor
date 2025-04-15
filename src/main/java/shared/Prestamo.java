@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.sistemabiblioteca.cliente.Modelo;
+package shared;
 
 import java.sql.Date;
 
@@ -10,7 +10,7 @@ import java.sql.Date;
  *
  * @author Usuario
  */
-public class PrestamoMOD {
+public class Prestamo {
 
     int prestamoID;
     int usuarioID;
@@ -21,7 +21,7 @@ public class PrestamoMOD {
     Double multa;
     Date fechaDevolucion;
 
-    public PrestamoMOD(int prestamoID, int usuarioID, int libroID, Date fechaInicio, Date fechaFinalizacion, String estado, Double multa, Date fechaDevolucion) {
+    public Prestamo(int prestamoID, int usuarioID, int libroID, Date fechaInicio, Date fechaFinalizacion, String estado, Double multa, Date fechaDevolucion) {
         this.prestamoID = prestamoID;
         this.usuarioID = usuarioID;
         this.libroID = libroID;
@@ -32,7 +32,7 @@ public class PrestamoMOD {
         this.fechaDevolucion = fechaDevolucion;
     }
 
-    public PrestamoMOD() {
+    public Prestamo() {
     }
 
     public int getPrestamoID() {

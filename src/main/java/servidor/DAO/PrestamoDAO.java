@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.sistemabiblioteca.cliente.Controlador.DAO;
+package servidor.DAO;
 
-import com.mycompany.sistemabiblioteca.cliente.Controlador.Conexion;
+import servidor.Conexion;
 
-import com.mycompany.sistemabiblioteca.cliente.Modelo.PrestamoMOD;
+import shared.Prestamo;
 import java.sql.Connection;
 import java.sql.*;
 import java.sql.PreparedStatement;
@@ -15,19 +15,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Usuario
  */
 public class PrestamoDAO {
-    public ArrayList<PrestamoMOD> obtener() {
-        ArrayList<PrestamoMOD> prestamos = new ArrayList<>();
+    public ArrayList<Prestamo> obtener() {
+        ArrayList<Prestamo> prestamos = new ArrayList<>();
         String query = "SELECT * FROM Prestamo";
         try (Connection conn = Conexion.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
 
-                PrestamoMOD prestamo = new PrestamoMOD(
+                Prestamo prestamo = new Prestamo(
                         rs.getInt("prestamoID"),
                         rs.getInt("usuarioID"),
                         rs.getInt("libroID"),
@@ -49,7 +50,7 @@ public class PrestamoDAO {
     
     
     
-    public boolean insertar(PrestamoMOD prestamo) {
+    public boolean agregar(Prestamo prestamo) {
         String query = "INSERT INTO Prestamo (usuarioID,libroID,fechaInicio,fechaFinalizacion,estado,multa,fechaDevolucion) VALUES (?,?,?,?,?,?,?)";
         try (Connection conn = Conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setInt(1,prestamo.getUsuarioID() );
@@ -66,8 +67,8 @@ public class PrestamoDAO {
             return false;
         }
     }
-     public ArrayList<PrestamoMOD> obtenerPorUsuarioID(int usuarioID) {
-    ArrayList<PrestamoMOD> prestamos = new ArrayList<>();
+     public List<Prestamo> obtenerPorUsuarioID(int usuarioID) {
+    List<Prestamo> prestamos = new ArrayList<>();
     String query = "SELECT * FROM Prestamo WHERE usuarioID = ?";
 
     try (Connection conn = Conexion.getConnection();
@@ -77,7 +78,7 @@ public class PrestamoDAO {
         
         try (ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
-                PrestamoMOD prestamo = new PrestamoMOD(
+                Prestamo prestamo = new Prestamo(
                         rs.getInt("prestamoID"),
                         rs.getInt("usuarioID"),
                         rs.getInt("libroID"),
@@ -116,26 +117,107 @@ public class PrestamoDAO {
         return libroID;
     }
      
+     
+     
      public boolean finalizarPrestamo(int idPrestamo, Date fechaDevolucion) {
-        String query = "UPDATE Prestamo SET estado= ? ,fechaDevolucion=?  WHERE prestamoID = ?";
-       
-        
-        
-        try (Connection conn = Conexion.getConnection(); 
-                PreparedStatement pstmt = conn.prepareStatement(query)) {
+    String query = "UPDATE Prestamo SET estado= ?, fechaDevolucion = ?, multa = ? WHERE prestamoID = ?";
 
-            pstmt.setString(1,"Finalizado");
-            pstmt.setDate(2,fechaDevolucion);
-            pstmt.setInt(3,idPrestamo);
-            pstmt.executeUpdate();
-            return true;
-            
+    try (Connection conn = Conexion.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+        // Obtenemos la fecha límite de entrega
+        Date fechaLimite = obtenerFechaFinalizacionPorID(idPrestamo);
+        double multa = 0.0;
+
+        if (fechaDevolucion.after(fechaLimite)) {
+            long diffMilis = fechaDevolucion.getTime() - fechaLimite.getTime();
+            long diasAtraso = diffMilis / (1000 * 60 * 60 * 24);
+            multa = diasAtraso * 500; // ₡500 por día
+        }
+
+        pstmt.setString(1, "Finalizado");
+        pstmt.setDate(2, fechaDevolucion);
+        pstmt.setDouble(3, multa);
+        pstmt.setInt(4, idPrestamo);
+
+        return pstmt.executeUpdate() > 0;
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
+     
+     
+     public Date obtenerFechaFinalizacionPorID(int idPrestamo) {
+    String query = "SELECT fechaFinalizacion FROM Prestamo WHERE prestamoID = ?";
+    try (Connection conn = Conexion.getConnection();
+         PreparedStatement ps = conn.prepareStatement(query)) {
+        ps.setInt(1, idPrestamo);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getDate("fechaFinalizacion");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+
+     public boolean tieneMultasActivas(int usuarioID) {
+    String query = "SELECT COUNT(*) FROM Prestamo WHERE usuarioID = ? AND multa > 0";
+    try (Connection conn = Conexion.getConnection();
+         PreparedStatement ps = conn.prepareStatement(query)) {
+        ps.setInt(1, usuarioID);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+     
+     public double obtenerMultaPorID(int idPrestamo) {
+    String query = "SELECT multa FROM Prestamo WHERE prestamoID = ?";
+    try (Connection conn = Conexion.getConnection();
+         PreparedStatement ps = conn.prepareStatement(query)) {
+        ps.setInt(1, idPrestamo);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getDouble("multa");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return 0.0;
+}
+     
+     public boolean pagarMultas(int usuarioID) {
+    String query = "UPDATE prestamo SET multa = 0.0 WHERE usuarioID = ? AND multa > 0";
+    try (Connection conn = Conexion.getConnection();
+         PreparedStatement ps = conn.prepareStatement(query)) {
+        ps.setInt(1, usuarioID);
+        return ps.executeUpdate() > 0;
+    } catch (SQLException e) {
+        System.out.println("Error al pagar multas: " + e.getMessage());
+        return false;
+    }
+}
+    public double obtenerMultaTotal(int usuarioID) {
+        String query = "SELECT SUM(multa) FROM prestamo WHERE usuarioID = ? AND multa > 0";
+        try (Connection conn = Conexion.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, usuarioID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
-       
-        
+        return 0.0;
     }
      
      

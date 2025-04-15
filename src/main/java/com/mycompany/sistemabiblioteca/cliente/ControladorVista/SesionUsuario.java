@@ -2,8 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.sistemabiblioteca.cliente.Controlador;
-import com.mycompany.sistemabiblioteca.cliente.Modelo.UsuarioMOD;
+package com.mycompany.sistemabiblioteca.cliente.ControladorVista;
+import shared.Usuario;
 
 /**
  *
@@ -11,7 +11,7 @@ import com.mycompany.sistemabiblioteca.cliente.Modelo.UsuarioMOD;
  */
 public class SesionUsuario {
     private static SesionUsuario instancia;
-    private UsuarioMOD usuario;
+    private Usuario usuario;
 
     private SesionUsuario() {}
 
@@ -22,11 +22,11 @@ public class SesionUsuario {
         return instancia;
     }
 
-    public void iniciarSesion(UsuarioMOD usuario) {
+    public void iniciarSesion(Usuario usuario) {
         this.usuario = usuario;
     }
 
-    public UsuarioMOD getUsuario() {
+    public Usuario getUsuario() {
         return usuario;
     }
 

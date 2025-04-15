@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.mycompany.sistemabiblioteca.cliente.Vista;
-import com.mycompany.sistemabiblioteca.cliente.Modelo.AutorMOD;
+import shared.Autor;
 /**
  *
  * @author Usuario
@@ -269,7 +269,7 @@ public class LibrosAdmin extends javax.swing.JFrame {
     public javax.swing.JButton btnEliminar;
     public javax.swing.JButton btnVolverLibros;
     public javax.swing.JComboBox<Object> inputAutor;
-    public javax.swing.JComboBox<String> inputCategoria;
+    public javax.swing.JComboBox<Object> inputCategoria;
     public javax.swing.JComboBox inputDisponibilidad;
     public javax.swing.JTextField inputNombre;
     public javax.swing.JTextField inputPublicacion;

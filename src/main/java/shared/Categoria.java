@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.sistemabiblioteca.cliente.Modelo;
+package shared;
 
 import java.util.logging.Logger;
 
@@ -10,17 +10,17 @@ import java.util.logging.Logger;
  *
  * @author Usuario
  */
-public class CategoriaMOD {
+public class Categoria {
 
     int categoriaID;
     String nombre;
 
-    public CategoriaMOD(int categoriaID, String nombre) {
+    public Categoria(int categoriaID, String nombre) {
         this.categoriaID = categoriaID;
         this.nombre = nombre;
     }
 
-    public CategoriaMOD() {
+    public Categoria() {
     }
 
     public int getCategoriaID() {
