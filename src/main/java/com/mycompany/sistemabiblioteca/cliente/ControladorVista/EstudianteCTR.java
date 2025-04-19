@@ -23,6 +23,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -174,173 +176,178 @@ public class EstudianteCTR implements ActionListener {
         if (e.getSource() == vistaNuevoPrestamo.btnSolicitar) {
 
             try {
-
+                
                 int usuarioID = SesionUsuario.getInstancia().getUsuario().getUsuarioID();
-                try {
-                    if (prestamoController.tieneMultasActivas(usuarioID)) {
-                        JOptionPane.showMessageDialog(vistaNuevoPrestamo, "No puede solicitar libros hasta pagar su multa.", "Multa pendiente", JOptionPane.WARNING_MESSAGE);
-                        return;
-                    }
-                } catch (IOException ex) {
-                    Logger.getLogger(EstudianteCTR.class.getName()).log(Level.SEVERE, null, ex);
+                if (prestamoController.tieneMultasActivas(usuarioID)) {
+                    JOptionPane.showMessageDialog(vistaNuevoPrestamo, "No puede solicitar libros hasta pagar su multa.", "Multa pendiente", JOptionPane.WARNING_MESSAGE);
+                    return;
                 }
-
+                
                 try {
+                    System.out.println("ENTRA EN EL FUERA DEL IF DEL TIENE MULTAS ACTIVAS");
                     modeloPrestamo.setUsuarioID(SesionUsuario.getInstancia().getUsuario().getUsuarioID());
                     modeloPrestamo.setLibroID(Integer.parseInt(vistaNuevoPrestamo.seleccionLibroID.getText()));
-
+                    
                     SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
-
+                    
                     String fechaInicioString = vistaNuevoPrestamo.inputFechaInicio.getText();
                     String fechaFinalizacionString = vistaNuevoPrestamo.inputFechaFinalizacion.getText();
-
+                    
                     java.util.Date utilDateInicio = formato.parse(fechaInicioString);
                     java.util.Date utilDateFin = formato.parse(fechaFinalizacionString);
-
+                    
                     java.sql.Date fechaInicio = new java.sql.Date(utilDateInicio.getTime());
                     java.sql.Date fechaFin = new java.sql.Date(utilDateFin.getTime());
-
+                    
                     modeloPrestamo.setFechaInicio(fechaInicio);
                     modeloPrestamo.setFechaFinalizacion(fechaFin);
-
+                    
                     if (vistaNuevoPrestamo.inputDisponibilidad.getText().equals("Disponible")) {
                         modeloPrestamo.setEstado("Activo");
                         cargarLibros();
                     } else {
                         modeloPrestamo.setEstado("Inactivo");
+                        
                     }
-
                     modeloPrestamo.setMulta(0.0);
-
+                    
                     if (prestamoController.agregar(modeloPrestamo) && vistaNuevoPrestamo.inputDisponibilidad.getText().equals("Disponible")) {
                         JOptionPane.showMessageDialog(vistaNuevoPrestamo, "Se agrego el prestamo con exito", "Success", JOptionPane.INFORMATION_MESSAGE);
                         libroController.cambiarDisponibilidad(modeloPrestamo.getLibroID());
-                        cargarPrestamos();
+                        cargarLibros();
+                        
                     } else {
-                        int libroID = Integer.parseInt(vistaNuevoPrestamo.seleccionLibroID.getText());
-                        Date fechaDisponible = libroController.obtenerFechaFinalizacionPorLibro(libroID);
-
-                        if (fechaDisponible != null) {
-                            reservarLibro(libroID, fechaDisponible);
-                        } else {
-                            JOptionPane.showMessageDialog(vistaNuevoPrestamo, "Este libro está prestado, pero no se pudo obtener una fecha estimada para su devolución.");
-                        }
-
-                        cargarPrestamos();
+//                        int libroID = Integer.parseInt(vistaNuevoPrestamo.seleccionLibroID.getText());
+//                        Date fechaDisponible = libroController.obtenerFechaFinalizacionPorLibro(libroID);
+//                        
+//                        if (fechaDisponible != null) {
+//                            reservarLibro(libroID, fechaDisponible);
+//                        } else {
+                            JOptionPane.showMessageDialog(vistaNuevoPrestamo, "Este libro está prestado, y no se pudo obtener una fecha estimada para su devolución.");
+                        
+                            
+                        
+                        cargarLibros(); 
                     }
-
-                } catch (IOException ex) {
-                    Logger.getLogger(EstudianteCTR.class.getName()).log(Level.SEVERE, null, ex);
+                    
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(vistaNuevoPrestamo, "Error", "Error", JOptionPane.ERROR_MESSAGE);
                 } catch (ParseException ex) {
                     Logger.getLogger(EstudianteCTR.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
-            } catch (Exception ex) {
+            } catch (IOException ex) {
                 Logger.getLogger(EstudianteCTR.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            if (e.getSource() == vistaPrestamos.btnPagarMulta) {
-                try {
-                    int usuarioID = SesionUsuario.getInstancia().getUsuario().getUsuarioID();
-
-                    double multa = prestamoController.obtenerMultaTotal(usuarioID);
-
-                    if (multa <= 0) {
-                        JOptionPane.showMessageDialog(vistaPrestamos, "No tiene multas pendientes.");
-                        return;
+        }
+        if (e.getSource() == vistaPrestamos.btnPagarMulta) {
+            try {
+                int usuarioID = SesionUsuario.getInstancia().getUsuario().getUsuarioID();
+                
+                double multa = prestamoController.obtenerMultaTotal(usuarioID);
+                
+                System.out.println("LA MULTA ES DE:" + multa);
+                
+                if (multa <= 0) {
+                    JOptionPane.showMessageDialog(vistaPrestamos, "No tiene multas pendientes.");
+                    return;
+                }
+                
+                int confirmacion = JOptionPane.showConfirmDialog(vistaPrestamos,
+                        "Tiene una multa de ₡" + multa + ". ¿Desea pagarla ahora?",
+                        "Confirmar pago",
+                        JOptionPane.YES_NO_OPTION);
+                
+                if (confirmacion == JOptionPane.YES_OPTION) {
+                    boolean pagado = prestamoController.pagarMultas(usuarioID);
+                    if (pagado) {
+                        JOptionPane.showMessageDialog(vistaPrestamos, "Multa pagada exitosamente.");
+                        cargarPrestamos(); 
+                    } else {
+                        JOptionPane.showMessageDialog(vistaPrestamos, "Ocurrió un error al procesar el pago.");
                     }
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(EstudianteCTR.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
-                    int confirmacion = JOptionPane.showConfirmDialog(vistaPrestamos,
-                            "Tiene una multa de ₡" + multa + ". ¿Desea pagarla ahora?",
-                            "Confirmar pago",
-                            JOptionPane.YES_NO_OPTION);
+        if (e.getSource() == vistaPrestamos.btnFinalizar) {
 
-                    if (confirmacion == JOptionPane.YES_OPTION) {
-                        boolean pagado = prestamoController.pagarMultas(usuarioID);
-                        if (pagado) {
-                            JOptionPane.showMessageDialog(vistaPrestamos, "Multa pagada exitosamente.");
-                            cargarPrestamos(); 
+            try {
+                int idPrestamo = Integer.parseInt(vistaPrestamos.seleccionID.getText());
+                Date fechaActual = new Date(System.currentTimeMillis());
+
+                try {
+                    if (prestamoController.finalizar(idPrestamo, fechaActual)) {
+                        
+                        double multa = prestamoController.obtenerMultaPorID(idPrestamo);
+                        if (multa > 0) {
+                            JOptionPane.showMessageDialog(vistaPrestamos, "Libro devuelto con retraso" + "Multa aplicada: ₡" + multa);
                         } else {
-                            JOptionPane.showMessageDialog(vistaPrestamos, "Ocurrió un error al procesar el pago.");
+                            
+                            JOptionPane.showMessageDialog(vistaPrestamos, "Préstamo finalizado sin multa");
+                            
                         }
+                        
+                        libroController.setDisponible(prestamoController.obtenerIDLibroPorIDPrestamo(idPrestamo));
+                        cargarPrestamos();
+                        
+                    } else {
+                        JOptionPane.showMessageDialog(vistaPrestamos, "No se puede finalizar", "Error", JOptionPane.ERROR_MESSAGE);
+                        cargarPrestamos();
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(EstudianteCTR.class.getName()).log(Level.SEVERE, null, ex);
                 }
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(vistaPrestamos, "Error", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-            if (e.getSource() == vistaPrestamos.btnFinalizar) {
-
+        }
+        if (e.getSource() == vistaNuevoPrestamo.btnReservar) {
+            Date fechaDisponible = null;
+            try {
+                int usuarioID = SesionUsuario.getInstancia().getUsuario().getUsuarioID();
+                
+                if (prestamoController.tieneMultasActivas(usuarioID)) {
+                    JOptionPane.showMessageDialog(vistaNuevoPrestamo,
+                            "Tiene multas activas",
+                            "Multa pendiente por pagar",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
+                int filaSeleccionada = vistaNuevoPrestamo.tbLibros.getSelectedRow();
+                if (filaSeleccionada == -1) {
+                    JOptionPane.showMessageDialog(vistaNuevoPrestamo,
+                            "Debe seleccionar un libro en la tabla antes de reservar.");
+                    return;
+                }
+                
                 try {
-                    int idPrestamo = Integer.parseInt(vistaPrestamos.seleccionID.getText());
-                    Date fechaActual = new Date(System.currentTimeMillis());
-
+                    int libroID = Integer.parseInt(vistaNuevoPrestamo.tbLibros.getValueAt(filaSeleccionada, 0).toString());
+                    
                     try {
-                        if (prestamoController.finalizar(idPrestamo, fechaActual)) {
-                            double multa = prestamoController.obtenerMultaPorID(idPrestamo);
-                            if (multa > 0) {
-                                JOptionPane.showMessageDialog(vistaPrestamos, "Libro devuelto con retraso" + "Multa aplicada: ₡" + multa);
-                            } else {
-
-                                JOptionPane.showMessageDialog(vistaPrestamos, "Préstamo finalizado sin multa");
-
-                            }
-
-                            libroController.setDisponible(prestamoController.obtenerIDLibroPorIDPrestamo(idPrestamo));
-                            cargarPrestamos();
-
-                        } else {
-                            JOptionPane.showMessageDialog(vistaPrestamos, "El libro no esta disponible", "Error", JOptionPane.ERROR_MESSAGE);
-                            cargarPrestamos();
-                        }
+                        fechaDisponible = libroController.obtenerFechaFinalizacionPorLibro(libroID);
                     } catch (IOException ex) {
-                        Logger.getLogger(EstudianteCTR.class.getName()).log(Level.SEVERE, null, ex);
+                        ex.getMessage();
                     }
-
+                    
+                    if ( fechaDisponible != null) {
+                        reservarLibro(libroID, fechaDisponible);
+                    } else {
+                        JOptionPane.showMessageDialog(vistaNuevoPrestamo,
+                                "No se encontró una fecha estimada de disponibilidad.");
+                    }
+                    
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(vistaPrestamos, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(vistaNuevoPrestamo,
+                            "Error al leer el ID del libro.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 }
+            } catch (IOException ex) {
+                Logger.getLogger(EstudianteCTR.class.getName()).log(Level.SEVERE, null, ex);
             }
-            if (e.getSource() == vistaNuevoPrestamo.btnReservar) {
-                try {
-                    int usuarioID = SesionUsuario.getInstancia().getUsuario().getUsuarioID();
-
-                    if (prestamoController.tieneMultasActivas(usuarioID)) {
-                        JOptionPane.showMessageDialog(vistaNuevoPrestamo,
-                                "No puede reservar libros hasta pagar su multa.",
-                                "Multa pendiente",
-                                JOptionPane.WARNING_MESSAGE);
-                        return;
-                    }
-
-                    int filaSeleccionada = vistaNuevoPrestamo.tbLibros.getSelectedRow();
-                    if (filaSeleccionada == -1) {
-                        JOptionPane.showMessageDialog(vistaNuevoPrestamo,
-                                "Debe seleccionar un libro en la tabla antes de reservar.");
-                        return;
-                    }
-
-                    try {
-                        int libroID = Integer.parseInt(vistaNuevoPrestamo.tbLibros.getValueAt(filaSeleccionada, 0).toString());
-                        Date fechaDisponible = libroController.obtenerFechaFinalizacionPorLibro(libroID);
-
-                        if (fechaDisponible != null) {
-                            reservarLibro(libroID, fechaDisponible);
-                        } else {
-                            JOptionPane.showMessageDialog(vistaNuevoPrestamo,
-                                    "No se encontró una fecha estimada de disponibilidad.");
-                        }
-
-                    } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(vistaNuevoPrestamo,
-                                "Error al leer el ID del libro.",
-                                "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                } catch (IOException ex) {
-                    Logger.getLogger(EstudianteCTR.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
         }
 
     }
@@ -360,7 +367,7 @@ public class EstudianteCTR implements ActionListener {
             modelTable.addColumn("Categoria");
             modelTable.addColumn("Disponibilidad");
             modelTable.addColumn("Año Publicacion");
-
+            
             if (!modelosLibro.isEmpty()) {
                 for (Libro libro : modelosLibro) {
                     modelTable.addRow(new String[]{
@@ -370,38 +377,67 @@ public class EstudianteCTR implements ActionListener {
                         categoriaController.buscarPorID(libro.getCategoriaID()),
                         libro.isDisponibilidad() ? "Disponible" : "No Disponible",
                         libro.getAnoPublicacion().toString()
-
+                            
                     });
                 }
             } else {
                 JOptionPane.showMessageDialog(vistaNuevoPrestamo, "No hay libros", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
+            
             vistaNuevoPrestamo.tbLibros.setModel(modelTable);
         } catch (IOException ex) {
-            Logger.getLogger(EstudianteCTR.class.getName()).log(Level.SEVERE, null, ex);
+           ex.getMessage();
         }
     }
 
-    // Método que permite registrar una reserva cuando el libro no está disponible
+    
     public void reservarLibro(int libroID, Date fechaDisponible) {
-
         try {
-            Reserva reserva = new Reserva();// Instancia
+            Reserva reserva = new Reserva();
             reserva.setUsuarioID(SesionUsuario.getInstancia().getUsuario().getUsuarioID());//Asignamos el ID del usuario que está actualmente logueado
-            reserva.setLibroID(libroID);//Le asignamos el libro que se intenta reservar
+            reserva.setLibroID(libroID);
             reserva.setFechaReserva(new Date(System.currentTimeMillis()));//Asignamos la fecha actual como la fecha de reserva
             reserva.setFechaDisponible(fechaDisponible);//Se brindara la fecha estimada en la que estará disponible el libro
             
-            if (reservaController.agregar(reserva)) { // Guardamos en la DB
+            if (reservaController.agregar(reserva)) { 
                 JOptionPane.showMessageDialog(vistaNuevoPrestamo, "Libro reservado exitosamente. Estará disponible el: " + fechaDisponible);
             } else {
                 JOptionPane.showMessageDialog(vistaNuevoPrestamo, "Error al intentar reservar el libro.");
             }
         } catch (IOException ex) {
-            Logger.getLogger(EstudianteCTR.class.getName()).log(Level.SEVERE, null, ex);
+            ex.getMessage();
         }
     }
+    //Método que consulta la fecha estimada de devolución del libro actualmente prestado
+
+//    public Date obtenerFechaFinalizacionPorLibro(int libroID) {
+//        String query = "SELECT fechaFinalizacion FROM prestamo WHERE libroID = ? AND estado = 'Activo' "
+//                + "ORDER BY fechaFinalizacion ASC LIMIT 1";
+//
+//        try (PreparedStatement ps = Conexion.getConnection().prepareStatement(query)) {
+//            ps.setInt(1, libroID);
+//            ResultSet rs = ps.executeQuery();
+//            if (rs.next()) {
+//                return rs.getDate("fechaFinalizacion");
+//            } else {
+//                 Si no hay préstamos activos, buscamos el más reciente que fue finalizado
+//                String fallbackQuery = "SELECT fechaFinalizacion FROM prestamo WHERE libroID = ? "
+//                        + "ORDER BY fechaFinalizacion DESC LIMIT 1";
+//
+//                try (PreparedStatement ps2 = Conexion.getConnection().prepareStatement(fallbackQuery)) {
+//                    ps2.setInt(1, libroID);
+//                    ResultSet rs2 = ps2.executeQuery();
+//                    if (rs2.next()) {
+//                        return rs2.getDate("fechaFinalizacion");
+//                    }
+//                }
+//            }
+//        } catch (Exception e) {
+//            System.out.println("Error al obtener la fecha de finalización: " + e.getMessage());
+//        }
+//
+//        return null;
+//    }
 
     public void cargarPrestamos() {
         try {
@@ -414,7 +450,7 @@ public class EstudianteCTR implements ActionListener {
             modelTable.addColumn("Estado");
             modelTable.addColumn("Multa");
             modelTable.addColumn("Fecha Devolucion Real");
-
+            
             if (!modelosPrestamo.isEmpty()) {
                 for (Prestamo prestamo : modelosPrestamo) {
                     String fechaDevolucion = "";
@@ -431,23 +467,23 @@ public class EstudianteCTR implements ActionListener {
                         prestamo.getEstado(),
                         prestamo.getMulta().toString(),
                         fechaDevolucion
-
+                            
                     });
                 }
             } else {
                 JOptionPane.showMessageDialog(vistaPrestamos, "No hay prestamos", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
+            
             vistaPrestamos.tbPrestamos.setModel(modelTable);
         } catch (IOException ex) {
-            Logger.getLogger(EstudianteCTR.class.getName()).log(Level.SEVERE, null, ex);
+           ex.getMessage();
         }
     }
 
     public void cargarLibrosFiltrados(String filtro) {
         try {
             modelosLibro = libroController.buscarPorFiltroGeneral(filtro);
-
+            
             DefaultTableModel modelTable = new DefaultTableModel();
             modelTable.addColumn("Codigo");
             modelTable.addColumn("Titulo");
@@ -455,25 +491,27 @@ public class EstudianteCTR implements ActionListener {
             modelTable.addColumn("Categoria");
             modelTable.addColumn("Disponibilidad");
             modelTable.addColumn("Año Publicacion");
-
+            
             if (!modelosLibro.isEmpty()) {
                 for (Libro libro : modelosLibro) {
-                    modelTable.addRow(new String[]{
-                        String.valueOf(libro.getLibroID()),
-                        libro.getTitulo(),
-                        autorController.buscarPorID(libro.getAutorID()),
-                        categoriaController.buscarPorID(libro.getCategoriaID()),
-                        libro.isDisponibilidad() ? "Disponible" : "No Disponible",
-                        libro.getAnoPublicacion().toString()
-                    });
+                    
+                        modelTable.addRow(new String[]{
+                            String.valueOf(libro.getLibroID()),
+                            libro.getTitulo(),
+                            autorController.buscarPorID(libro.getAutorID()),
+                            categoriaController.buscarPorID(libro.getCategoriaID()),
+                            libro.isDisponibilidad() ? "Disponible" : "No Disponible",
+                            libro.getAnoPublicacion().toString()
+                        });
+                    
                 }
             } else {
                 JOptionPane.showMessageDialog(vistaNuevoPrestamo, "No se encontraron libros con ese filtro.");
             }
-
+            
             vistaNuevoPrestamo.tbLibros.setModel(modelTable);
         } catch (IOException ex) {
-            Logger.getLogger(EstudianteCTR.class.getName()).log(Level.SEVERE, null, ex);
+            ex.getMessage();
         }
     }
 

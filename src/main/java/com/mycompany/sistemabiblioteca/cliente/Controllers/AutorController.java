@@ -64,6 +64,7 @@ public class AutorController {
 
             out.println("AUTOR_BUSCAR_POR_ID:" + id);
             String response = in.readLine();
+            System.out.println(response);
             return response;
         }
 

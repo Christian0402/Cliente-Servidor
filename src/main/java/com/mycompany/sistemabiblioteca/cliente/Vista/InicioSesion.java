@@ -44,7 +44,7 @@ public class InicioSesion extends javax.swing.JFrame {
 
         jLabel3.setText("Contraseña: ");
 
-        inputContrasena.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        inputContrasena.setToolTipText("");
 
         btnRegistrarse.setText("Registrarse");
 

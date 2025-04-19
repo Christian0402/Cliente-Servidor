@@ -481,7 +481,7 @@ public class AdminCTR implements ActionListener {
 
                 try {
                     if (libroController.agregar(modeloLibro)) {
-                        JOptionPane.showMessageDialog(vistaLibros, "Se agrego al libro con exito", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(vistaLibros, "Libro agregado correctamente", "Success", JOptionPane.INFORMATION_MESSAGE);
                         cargarLibros();
                     } else {
                         JOptionPane.showMessageDialog(vistaLibros, "Error al agregar el libro", "Error", JOptionPane.ERROR_MESSAGE);
@@ -527,7 +527,7 @@ public class AdminCTR implements ActionListener {
 
                 try {
                     if (libroController.actualizar(modeloLibro)) {
-                        JOptionPane.showMessageDialog(vistaLibros, "Se agrego edito con exito", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(vistaLibros, "Libro actualizado correctamente", "Success", JOptionPane.INFORMATION_MESSAGE);
                         cargarLibros();
                     } else {
                         JOptionPane.showMessageDialog(vistaLibros, "Error al editar", "Error", JOptionPane.ERROR_MESSAGE);
@@ -550,7 +550,7 @@ public class AdminCTR implements ActionListener {
 
                 try {
                     if(libroController.eliminar(Integer.parseInt(vistaLibros.seleccionID.getText()))) {
-                        JOptionPane.showMessageDialog(vistaLibros, "Se  elimino con exito", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(vistaLibros, "Libro elimando correctament", "Success", JOptionPane.INFORMATION_MESSAGE);
                         cargarLibros();
                     } else {
                         JOptionPane.showMessageDialog(vistaLibros, "Error al editar", "Error", JOptionPane.ERROR_MESSAGE);
@@ -629,15 +629,15 @@ public class AdminCTR implements ActionListener {
         if (e.getSource() == vistaPrestamos.btnFinalizar) {
             try {
                 int idPrestamo = Integer.parseInt(vistaPrestamos.seleccionID.getText());
-                System.out.println("EL ide del prestamp por finalizar es " + idPrestamo);
+                System.out.println("EL ID del prestamo por finalizar es " + idPrestamo);
                 Date fechaActual = new Date(System.currentTimeMillis());
                 if (prestamoController.finalizar(idPrestamo,fechaActual) ){
-                    JOptionPane.showMessageDialog(vistaPrestamos, "Se finalizo el prestamo con exito", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(vistaPrestamos, "Finalizacion exitosa", "Success", JOptionPane.INFORMATION_MESSAGE);
                     libroController.setDisponible(prestamoController.obtenerIDLibroPorIDPrestamo(idPrestamo));
                     cargarPrestamos();
                    
                 } else {
-                    JOptionPane.showMessageDialog(vistaPrestamos, "Error", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(vistaPrestamos, "El prestamo ya se encuentra finalizado", "Error", JOptionPane.ERROR_MESSAGE);
                     cargarPrestamos();
                 }
             } catch (IOException ex) {
@@ -741,13 +741,14 @@ public class AdminCTR implements ActionListener {
     public void cargarCategoriasLibros() {
         try {
             modelosCategoria = categoriaController.obtener();
+            
         } catch (IOException ex) {
             ex.getMessage();
         }
         vistaLibros.inputCategoria.removeAllItems();
 
         for (Categoria categoria : modelosCategoria) {
-            vistaLibros.inputCategoria.addItem(categoria.getNombre());
+            vistaLibros.inputCategoria.addItem(categoria);
         }
     }
 
@@ -758,7 +759,7 @@ public class AdminCTR implements ActionListener {
             vistaLibros.inputAutor.removeAllItems();
             
             for (Autor autor : modelosAutor) {
-                vistaLibros.inputAutor.addItem(autor.getNombre());
+                vistaLibros.inputAutor.addItem(autor);
                 //vistaLibros.inputAutor.addItem(autor.getNombre());
                 
             }
@@ -832,7 +833,7 @@ public class AdminCTR implements ActionListener {
             if (!modelosPrestamo.isEmpty()) {
                 for (Prestamo prestamo : modelosPrestamo) {
                     String fechaDevolucion = "";
-                    System.out.println(prestamo.getPrestamoID());
+                    
                     if (prestamo.getFechaDevolucion() == null) {
                         fechaDevolucion = "No definida";
                     } else {

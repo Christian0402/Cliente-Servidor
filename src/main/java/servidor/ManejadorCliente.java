@@ -196,15 +196,16 @@ public class ManejadorCliente implements Runnable {
             } else if (request.startsWith("LIBRO_BUSCAR_POR_ID:")) {
                 int id = Integer.parseInt(request.substring(20));
                 return libroController.obtenerNombrePorID(id);
+                
             } else if (request.startsWith("LIBRO_CAMBIAR_DISPONIBILIDAD:")) {
-                int id = Integer.parseInt(request.substring(28));
+                int id = Integer.parseInt(request.substring(29));
                 if (libroController.cambiarDisponibilidad(id)) {
                     return "Cambio de disponibilidad realizada";
                 } else {
                     return "Error al cambiar la disponibilidad";
                 }
-            } else if (request.startsWith("LIBRO_SET_DISPONIBILIDAD:")) {
-                int id = Integer.parseInt(request.substring(26));
+            } else if (request.startsWith("LIBRO_SET_DISPONIBLE:")) {
+                int id = Integer.parseInt(request.substring(21));
                 if (libroController.setDisponible(id)) {
                     return "Libro disponible";
                 } else {
@@ -215,6 +216,7 @@ public class ManejadorCliente implements Runnable {
                 String filtro = request.substring(13);
                 List<Libro> libros = libroController.buscarPorFiltroGeneral(filtro);
                 return librosToString(libros);
+                
             }else if (request.startsWith("OBTENER_FECHA_FINALIZACION_LIBRO:")) {
                 int id = Integer.parseInt(request.substring(33));
                 Date fecha = libroController.obtenerFechaFinalizacionPorLibro(id);
@@ -222,7 +224,7 @@ public class ManejadorCliente implements Runnable {
                 
             } else if (request.startsWith("AGREGAR_PRESTAMO:")) {
                 Prestamo prestamo = parsePrestamo(request.substring(17));
-
+                System.out.println(prestamo);
                 if (prestamoController.agregar(prestamo)) {
                     return "Prestamo agregado correctamente";
                 } else {
@@ -237,6 +239,7 @@ public class ManejadorCliente implements Runnable {
                 int id = Integer.parseInt(request.substring(33));
                 List<Prestamo> prestamos = prestamoController.obtenerPorUsuarioID(id);
                 return prestamosToString(prestamos);
+                
             } else if (request.startsWith("OBTENER_ID_LIBRO_POR_PRESTAMO_ID:")) {
                 int id = Integer.parseInt(request.substring(33));
                 int idlibro = prestamoController.obtenerIDLibroPorIDPrestamo(id);
@@ -266,11 +269,16 @@ public class ManejadorCliente implements Runnable {
 
             } else if (request.startsWith("TIENE_MULTAS_ACTIVAS:")) {
                 int usuarioID = Integer.parseInt(request.substring(22));
-                boolean tieneMultas = prestamoController.tieneMultasActivas(usuarioID);
-                return String.valueOf(tieneMultas);
+                //boolean tieneMultas = prestamoController.tieneMultasActivas(usuarioID);
+                if (prestamoController.tieneMultasActivas(usuarioID)) {
+                        return "Tiene multas activas";
+                    } else {
+                        return "Error al finalizar";
+                    }
 
             } else if (request.startsWith("OBTENER_MULTA_POR_ID:")) {
-                int idPrestamo = Integer.parseInt(request.substring(22));
+                int idPrestamo = Integer.parseInt(request.substring(21));
+                System.out.println(idPrestamo);
                 double multa = prestamoController.obtenerMultaPorID(idPrestamo);
                 return String.valueOf(multa);
 
@@ -283,8 +291,9 @@ public class ManejadorCliente implements Runnable {
                 }
 
             } else if (request.startsWith("OBTENER_MULTA_TOTAL:")) {
-                int usuarioID = Integer.parseInt(request.substring(21));
+                int usuarioID = Integer.parseInt(request.substring(20));
                 double total = prestamoController.obtenerMultaTotal(usuarioID);
+                System.out.println(total + "en el servidor");
                 return String.valueOf(total);
 
 
@@ -430,23 +439,36 @@ public class ManejadorCliente implements Runnable {
     }
 
     private Prestamo parsePrestamo(String data) {
-        String[] parts = data.split(",");
-        try {
-            return new Prestamo(
-                    Integer.parseInt(parts[0]),
-                    Integer.parseInt(parts[1]),
-                    Integer.parseInt(parts[2]),
-                    Date.valueOf(parts[3]),
-                    Date.valueOf(parts[4]),
-                    parts[5],
-                    Double.parseDouble(parts[6]),
-                    Date.valueOf(parts[7])
-            );
-        } catch (Exception e) {
-            System.out.println("Error al parsear prestamo: " + e.getMessage());
+    String[] parts = data.split(",");
+    try {
+        
+        if (parts.length < 8) {
+            System.out.println("Datos incompletos para parsear préstamo.");
             return null;
         }
+
+        
+        Date fechaDevolucion = null;
+        if (!parts[7].equalsIgnoreCase("null")) {
+            fechaDevolucion = Date.valueOf(parts[7]);
+        }
+
+        return new Prestamo(
+                Integer.parseInt(parts[0]), 
+                Integer.parseInt(parts[1]), 
+                Integer.parseInt(parts[2]), 
+                Date.valueOf(parts[3]),     
+                Date.valueOf(parts[4]),     
+                parts[5],                   
+                Double.parseDouble(parts[6]), 
+                fechaDevolucion             
+        );
+    } catch (Exception e) {
+        System.out.println("Error al parsear prestamo: " + e.getMessage());
+        return null;
     }
+}
+
 
     private String prestamosToString(List<Prestamo> prestamos) {
         StringBuilder result = new StringBuilder();

@@ -11,8 +11,6 @@ import com.mycompany.sistemabiblioteca.cliente.Vista.InicioSesion;
 import com.mycompany.sistemabiblioteca.cliente.Vista.RegistroUsuario;
 import com.mycompany.sistemabiblioteca.cliente.Vista.PrincipalAdmin;
 
-
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -43,7 +41,7 @@ public class UsuarioCTR implements ActionListener {
         this.modelo = new Usuario();
         this.vistaInicio = new InicioSesion();
         this.vistaRegistro = new RegistroUsuario();
-        this.vistaAdmin= new PrincipalAdmin();
+        this.vistaAdmin = new PrincipalAdmin();
         this.usuarioController = new UsuarioController();
         this.vistaInicio.btnRegistrarse.addActionListener(this);
         this.vistaInicio.btnInicioSesion.addActionListener(this);
@@ -52,7 +50,7 @@ public class UsuarioCTR implements ActionListener {
     }
 
     public void inciar() {
-        
+
         vistaInicio.setTitle("Inicio Sesion");
         vistaInicio.setVisible(true);
     }
@@ -87,47 +85,47 @@ public class UsuarioCTR implements ActionListener {
         if (e.getSource() == vistaInicio.btnInicioSesion) {
             System.out.println("INCIANDO SESION...");
             Usuario usuarioIngresado = null;
-            
+
             try {
-                 List<Usuario> usuarios = usuarioController.iniciarSesion(modelo);
-                 usuarioIngresado = usuarios.get(0);
-                 System.out.println(usuarioIngresado.getNombre() + usuarioIngresado.getRol());
-                 System.out.println("USUARIO QUE LLEGA AL CLIENTE");
-                 SesionUsuario.getInstancia().iniciarSesion(usuarioIngresado);
-                
-                 
+                List<Usuario> usuarios = usuarioController.iniciarSesion(modelo);
+
+                if (usuarios == null) {
+                    {
+                        JOptionPane.showMessageDialog(vistaRegistro, "No hubo coincidencia con ese correo y contraseña", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                } else {
+
+                    usuarioIngresado = usuarios.get(0);
+                    SesionUsuario.getInstancia().iniciarSesion(usuarioIngresado);
+                    vistaInicio.dispose();
+                    if (usuarioIngresado.getRol().equals("Funcionario")) {
+
+                        AdminCTR adcrt = new AdminCTR();
+
+                        adcrt.inciar();
+
+                    } else if ((usuarioIngresado.getRol().equals("Estudiante"))) {
+                        EstudianteCTR escrt = new EstudianteCTR();
+                        escrt.iniciar();
+                    }
+
+                }
+
             } catch (IOException ex) {
                 ex.getMessage();
             }
-            
-            
-            
-            if (usuarioIngresado != null ) {
-                System.out.println("REVISAR LA INSTANCIA DEL OBJETO " + SesionUsuario.getInstancia().getUsuario().getNombre() );
-                vistaInicio.dispose();
-                
-                if (usuarioIngresado.getRol().equals("Funcionario")) {
-                   
-                    AdminCTR adcrt = new AdminCTR();
-                    
-                    adcrt.inciar();
-                    
-        
-                } else if ((usuarioIngresado.getRol().equals("Estudiante"))) {
-                    EstudianteCTR escrt = new EstudianteCTR();
-                    escrt.iniciar();
-                }else{JOptionPane.showMessageDialog(vistaRegistro, "No hubo coincidencia con ese correo y contraseña", "Error", JOptionPane.ERROR_MESSAGE);}
-
-            } else {
-                JOptionPane.showMessageDialog(vistaRegistro, "Error", "Error", JOptionPane.ERROR_MESSAGE);
-            }
         }
 
-        if (e.getSource() == vistaRegistro.btnRegistrar) {
+        if (e.getSource()
+                == vistaRegistro.btnRegistrar) {
             try {
-                System.out.println("REGISTRANDO...");
-                if (usuarioController.agregar(modelo)) {
-                    JOptionPane.showMessageDialog(vistaRegistro, "Registro completado", "Success", JOptionPane.ERROR_MESSAGE);
+                //System.out.println("REGISTRANDO...");
+                if (modelo.getNombre().equals("") || modelo.getPrimerApellido().equals("") || modelo.getSegundoApellido().equals("") || modelo.getCorreo().equals("") || modelo.getContrasena().equals("")) {
+                    JOptionPane.showMessageDialog(vistaRegistro, "Es necesario rellenar todos los espacios.", "Error", JOptionPane.ERROR_MESSAGE);
+
+                } else if (usuarioController.agregar(modelo)) {
+                    JOptionPane.showMessageDialog(vistaRegistro, "Registro completado", "Success", JOptionPane.INFORMATION_MESSAGE);
                     vistaRegistro.dispose();
                     vistaInicio.setVisible(true);
                 } else {
@@ -139,7 +137,4 @@ public class UsuarioCTR implements ActionListener {
         }
     }
 
-
-
 }
- 

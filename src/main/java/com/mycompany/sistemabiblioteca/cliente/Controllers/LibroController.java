@@ -37,7 +37,7 @@ public class LibroController {
 
             out.println("AGREGAR_LIBRO:" + libroToString(libro));
             String response = in.readLine();
-            return response.equals("Autor agregado correctamente");
+            return response.equals("Libro agregado correctamente");
         }
     }
 
@@ -46,7 +46,7 @@ public class LibroController {
 
             out.println("ACTUALIZAR_LIBRO:" + libroToString(libro));
             String response = in.readLine();
-            return response.equals("Autor actualizado correctamente");
+            return response.equals("Libro actualizado correctamente");
         }
     }
 
@@ -55,7 +55,7 @@ public class LibroController {
 
             out.println("ELIMINAR_LIBRO:" + id);
             String response = in.readLine();
-            return response.equals("Autor eliminado correctamente");
+            return response.equals("Libro eliminado correctamente");
         }
 
     }
@@ -72,7 +72,7 @@ public class LibroController {
     public boolean setDisponible(int id) throws IOException {
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT); PrintWriter out = new PrintWriter(socket.getOutputStream(), true); BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
-            out.println("LIBRO_SET_DISPONIBILIDAD:" + id);
+            out.println("LIBRO_SET_DISPONIBLE:" + id);
             String response = in.readLine();
             return response.equals("Libro disponible!");
         }
@@ -99,7 +99,7 @@ public class LibroController {
     public Date obtenerFechaFinalizacionPorLibro (int id)throws IOException{
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT); PrintWriter out = new PrintWriter(socket.getOutputStream(), true); BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
-            out.println("FILTRO_LIBRO:" + id);
+            out.println("OBTENER_FECHA_FINALIZACION:" + id);
             
             String response = in.readLine();
             Date fecha = Date.valueOf(response);
