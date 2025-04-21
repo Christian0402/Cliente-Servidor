@@ -4,6 +4,8 @@
  */
 package com.mycompany.sistemabiblioteca.cliente.Controllers;
 
+
+import com.mycompany.sistemabiblioteca.cliente.ControladorVista.SesionUsuario;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,8 +29,7 @@ public class ReservaController {
 
     public boolean agregar(Reserva reserva) throws IOException {
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT); PrintWriter out = new PrintWriter(socket.getOutputStream(), true); BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-
-            out.println("AGREGAR_RESERVA:" + reservaToString(reserva));
+            out.println("AGREGAR_RESERVA:" + reservaToString(reserva)+ "|CORREO:" +SesionUsuario.getInstancia().getUsuario().getCorreo());
             String response = in.readLine();
             return response.equals("Reserva agregada correctamente");
         }

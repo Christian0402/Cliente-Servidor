@@ -13,6 +13,7 @@ import servidor.Controllers.ReservaController;
 import servidor.Controllers.UsuarioController;
 import shared.Autor;
 import shared.Categoria;
+import shared.EmailService;
 import shared.Libro;
 import shared.Prestamo;
 import shared.Reserva;
@@ -196,7 +197,7 @@ public class ManejadorCliente implements Runnable {
             } else if (request.startsWith("LIBRO_BUSCAR_POR_ID:")) {
                 int id = Integer.parseInt(request.substring(20));
                 return libroController.obtenerNombrePorID(id);
-                
+
             } else if (request.startsWith("LIBRO_CAMBIAR_DISPONIBILIDAD:")) {
                 int id = Integer.parseInt(request.substring(29));
                 if (libroController.cambiarDisponibilidad(id)) {
@@ -211,17 +212,16 @@ public class ManejadorCliente implements Runnable {
                 } else {
                     return "Error al cambiar la disponibilidad";
                 }
-            }
-            else if (request.startsWith("FILTRO_LIBRO:")) {
+            } else if (request.startsWith("FILTRO_LIBRO:")) {
                 String filtro = request.substring(13);
                 List<Libro> libros = libroController.buscarPorFiltroGeneral(filtro);
                 return librosToString(libros);
-                
-            }else if (request.startsWith("OBTENER_FECHA_FINALIZACION_LIBRO:")) {
+
+            } else if (request.startsWith("OBTENER_FECHA_FINALIZACION_LIBRO:")) {
                 int id = Integer.parseInt(request.substring(33));
                 Date fecha = libroController.obtenerFechaFinalizacionPorLibro(id);
                 return fecha.toString();
-                
+
             } else if (request.startsWith("AGREGAR_PRESTAMO:")) {
                 Prestamo prestamo = parsePrestamo(request.substring(17));
                 System.out.println(prestamo);
@@ -239,7 +239,7 @@ public class ManejadorCliente implements Runnable {
                 int id = Integer.parseInt(request.substring(33));
                 List<Prestamo> prestamos = prestamoController.obtenerPorUsuarioID(id);
                 return prestamosToString(prestamos);
-                
+
             } else if (request.startsWith("OBTENER_ID_LIBRO_POR_PRESTAMO_ID:")) {
                 int id = Integer.parseInt(request.substring(33));
                 int idlibro = prestamoController.obtenerIDLibroPorIDPrestamo(id);
@@ -271,10 +271,10 @@ public class ManejadorCliente implements Runnable {
                 int usuarioID = Integer.parseInt(request.substring(22));
                 //boolean tieneMultas = prestamoController.tieneMultasActivas(usuarioID);
                 if (prestamoController.tieneMultasActivas(usuarioID)) {
-                        return "Tiene multas activas";
-                    } else {
-                        return "Error al finalizar";
-                    }
+                    return "Tiene multas activas";
+                } else {
+                    return "Error al finalizar";
+                }
 
             } else if (request.startsWith("OBTENER_MULTA_POR_ID:")) {
                 int idPrestamo = Integer.parseInt(request.substring(21));
@@ -296,29 +296,31 @@ public class ManejadorCliente implements Runnable {
                 System.out.println(total + "en el servidor");
                 return String.valueOf(total);
 
+                //RESERVA
+            } else if (request.startsWith("AGREGAR_RESERVA:")) {
+                String datosCompletos = request.substring(16); 
 
-              
-                
-             
-            //RESERVA
-            }else if (request.startsWith("AGREGAR_RESERVA:")) {
-                 Reserva reserva = parseReserva(request.substring(16));
+                String[] partes = datosCompletos.split("\\|CORREO:");
+                String datosReserva = partes[0];
+                String correo = partes.length > 1 ? partes[1] : ""; 
+
+                Reserva reserva = parseReserva(datosReserva);
 
                 if (reservaController.agregar(reserva)) {
+                    
+                    if (!correo.isEmpty()) {
+                        EmailService.enviarCorreoReserva(correo, reserva); 
+                    }
                     return "Reserva agregada correctamente";
                 } else {
                     return "Error al agregar reserva";
                 }
-            }else if (request.startsWith("RESERVA_POR_ID_USUARIO:")) {
+            } else if (request.startsWith("RESERVA_POR_ID_USUARIO:")) {
                 int id = Integer.parseInt(request.substring(23));
                 List<Reserva> reservas = reservaController.obtenerPorUsuarioID(id);
                 return reservasToString(reservas);
             }
-            
-           
-            
-            
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             return "ERROR";
@@ -439,36 +441,34 @@ public class ManejadorCliente implements Runnable {
     }
 
     private Prestamo parsePrestamo(String data) {
-    String[] parts = data.split(",");
-    try {
-        
-        if (parts.length < 8) {
-            System.out.println("Datos incompletos para parsear préstamo.");
+        String[] parts = data.split(",");
+        try {
+
+            if (parts.length < 8) {
+                System.out.println("Datos incompletos para parsear préstamo.");
+                return null;
+            }
+
+            Date fechaDevolucion = null;
+            if (!parts[7].equalsIgnoreCase("null")) {
+                fechaDevolucion = Date.valueOf(parts[7]);
+            }
+
+            return new Prestamo(
+                    Integer.parseInt(parts[0]),
+                    Integer.parseInt(parts[1]),
+                    Integer.parseInt(parts[2]),
+                    Date.valueOf(parts[3]),
+                    Date.valueOf(parts[4]),
+                    parts[5],
+                    Double.parseDouble(parts[6]),
+                    fechaDevolucion
+            );
+        } catch (Exception e) {
+            System.out.println("Error al parsear prestamo: " + e.getMessage());
             return null;
         }
-
-        
-        Date fechaDevolucion = null;
-        if (!parts[7].equalsIgnoreCase("null")) {
-            fechaDevolucion = Date.valueOf(parts[7]);
-        }
-
-        return new Prestamo(
-                Integer.parseInt(parts[0]), 
-                Integer.parseInt(parts[1]), 
-                Integer.parseInt(parts[2]), 
-                Date.valueOf(parts[3]),     
-                Date.valueOf(parts[4]),     
-                parts[5],                   
-                Double.parseDouble(parts[6]), 
-                fechaDevolucion             
-        );
-    } catch (Exception e) {
-        System.out.println("Error al parsear prestamo: " + e.getMessage());
-        return null;
     }
-}
-
 
     private String prestamosToString(List<Prestamo> prestamos) {
         StringBuilder result = new StringBuilder();
@@ -485,32 +485,32 @@ public class ManejadorCliente implements Runnable {
         }
         return result.toString();
     }
+
     private Reserva parseReserva(String datos) {
-    String[] partes = datos.split(",");
-    Reserva reserva = new Reserva();
+        String[] partes = datos.split(",");
+        Reserva reserva = new Reserva();
 
-    if (partes.length >= 5) {
-        reserva.setReservaID(Integer.parseInt(partes[0]));
-        reserva.setUsuarioID(Integer.parseInt(partes[1]));
-        reserva.setLibroID(Integer.parseInt(partes[2]));
-        reserva.setFechaReserva(Date.valueOf(partes[3]));
-        reserva.setFechaDisponible(Date.valueOf(partes[4]));
+        if (partes.length >= 5) {
+            reserva.setReservaID(Integer.parseInt(partes[0]));
+            reserva.setUsuarioID(Integer.parseInt(partes[1]));
+            reserva.setLibroID(Integer.parseInt(partes[2]));
+            reserva.setFechaReserva(Date.valueOf(partes[3]));
+            reserva.setFechaDisponible(Date.valueOf(partes[4]));
+        }
+
+        return reserva;
     }
 
-    return reserva;
-}
-
-private String reservasToString(List<Reserva> reservas) {
-    StringBuilder result = new StringBuilder();
-    for (Reserva reserva : reservas) {
-        result.append(reserva.getReservaID()).append(",")
-              .append(reserva.getUsuarioID()).append(",")
-              .append(reserva.getLibroID()).append(",")
-              .append(reserva.getFechaReserva().toString()).append(",")
-              .append(reserva.getFechaDisponible().toString()).append(";");
+    private String reservasToString(List<Reserva> reservas) {
+        StringBuilder result = new StringBuilder();
+        for (Reserva reserva : reservas) {
+            result.append(reserva.getReservaID()).append(",")
+                    .append(reserva.getUsuarioID()).append(",")
+                    .append(reserva.getLibroID()).append(",")
+                    .append(reserva.getFechaReserva().toString()).append(",")
+                    .append(reserva.getFechaDisponible().toString()).append(";");
+        }
+        return result.toString();
     }
-    return result.toString();
-}
-
 
 }
